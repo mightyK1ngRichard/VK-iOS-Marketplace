@@ -14,7 +14,7 @@ import SwiftUI
 
 protocol CakeServiceProtocol {
 //    func getCakesList(completion: @escaping CHMResultBlock<[ProductModel], APIError>)
-    func createCake(userID: String, cake: ProductRequest, completion: @escaping (Error?) -> Void)
+    func createCake(cake: ProductRequest, completion: @escaping (Error?) -> Void)
 }
 
 // MARK: - CakeService
@@ -34,10 +34,9 @@ extension CakeService: CakeServiceProtocol {
 
     /// Cake creation
     /// - Parameters:
-    ///   - userID: user document id
-    ///   - cakeModel: cake info
+    ///   - cake: info of the new cake
     ///   - completion: creation result
-    func createCake(userID: String, cake: ProductRequest, completion: @escaping (Error?) -> Void) {
+    func createCake(cake: ProductRequest, completion: @escaping (Error?) -> Void) {
         let dispatchGroup = DispatchGroup()
 
         var images: [String] = []
@@ -47,33 +46,33 @@ extension CakeService: CakeServiceProtocol {
                 dispatchGroup.enter()
                 createImage(
                     image: image,
-                    directoryName: "cake/\(userID)/\(cake.productName)",
-                    imageName: generateUniqueFileName(userID: userID)
+                    directoryName: "cake/\(cake.seller.name)/\(cake.productName)",
+                    imageName: generateUniqueFileName(userID: cake.seller.name)
                 ) { result in
                     switch result {
-                    case .success(let url):
-                        asyncMain {
-                            images.append(url)
-                        }
+                    case let .success(url):
+                        images.append(url)
                         dispatchGroup.leave()
-                    case .failure(let error):
-                        print(error)
+                    case let .failure(error):
+                        Logger.log(kind: .error, message: error)
                         dispatchGroup.leave()
                     }
                 }
             }
         case let .url(urls):
             images = urls.toStringArray
-        case .clear:
+        default:
             break
         }
-
+        
         dispatchGroup.notify(queue: .main) {
-            Logger.log(message: images)
+            var firebaseCakeDocument = cake
+            firebaseCakeDocument.images = .strings(images)
+            let document = firebaseCakeDocument.dictionaryRepresentation
             self.firestore
                 .collection(FirestoreCollections.products.rawValue)
                 .addDocument(
-                    data: cake.mapperToDictionaty(userID: userID, images: images),
+                    data: document,
                     completion: completion
                 )
         }

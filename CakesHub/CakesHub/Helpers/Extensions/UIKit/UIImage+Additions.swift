@@ -7,13 +7,13 @@
 
 import UIKit
 
+// MARK: Preview Images
+
 #if DEBUG
-
-// MARK: - Preview Images
-
 extension UIImage {
 
-    static let cakeImageMock = UIImage(named: "cake")
+    static let cakeImageMock  = UIImage(named: "cake")
+    static let cake2ImageMock = UIImage(named: "cake2")
+    static let cake3ImageMock = UIImage(named: "cake3")
 }
-
 #endif

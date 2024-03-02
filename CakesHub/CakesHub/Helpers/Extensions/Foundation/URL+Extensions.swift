@@ -16,4 +16,5 @@ extension URL {
     static let mockCake3 = URL(string: "https://almode.ru/uploads/posts/2021-12/1640552550_12-almode-ru-p-krasivie-torti-12.jpg")
     static let mockCake4 = URL(string: "https://mykaleidoscope.ru/uploads/posts/2021-09/1632834133_8-mykaleidoscope-ru-p-dekor-dvukhyarusnogo-torta-krasivo-foto-9.jpg")
     static let invalidUrl = URL(string: "invalid://url")
+    static let mockUserImage = URL(string: "https://webmg.ru/wp-content/uploads/2022/10/i-321-1.jpeg")
 }

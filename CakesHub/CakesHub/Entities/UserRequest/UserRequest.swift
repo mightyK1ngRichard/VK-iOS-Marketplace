@@ -7,18 +7,29 @@
 
 import Foundation
 
-final class UserRequest {
-    let name: String
-    let login: String
-    let password: String
-    let image: String?
-    let phone: String
+struct UserRequest: DictionaryConvertible, ClearConfigurationProtocol {
+    var id       : String = .clear
+    var name     : String = .clear
+    var login    : String = .clear
+    var password : String = .clear
+    var image    : String?
+    var phone    : String = .clear
 
-    init(name: String, login: String, password: String, image: String?, phone: String) {
-        self.name = name
-        self.login = login
-        self.password = password
-        self.image = image
-        self.phone = phone
-    }
+    static let clear = UserRequest()
 }
+
+// MARK: - MockData
+
+#if DEBUG
+extension UserRequest {
+
+    static let mockData = UserRequest(
+        id: "8n5di1sb8ya1I9Tc2uR8TWpgtsK2",
+        name: RegisterUserRequest.mockData.nickname,
+        login: RegisterUserRequest.mockData.email,
+        password: RegisterUserRequest.mockData.password,
+        image: "https://webmg.ru/wp-content/uploads/2022/10/i-321-1.jpeg",
+        phone: "+7(914)234-12-12"
+    )
+}
+#endif

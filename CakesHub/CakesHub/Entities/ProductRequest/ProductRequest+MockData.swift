@@ -14,18 +14,18 @@ extension ProductRequest {
     static let mockData = ProductRequest(
         images: .images([
             .cakeImageMock,
-            .cakeImageMock,
-            .cakeImageMock,
+            .cake2ImageMock,
+            .cake3ImageMock,
         ]),
         badgeText: "NEW",
         pickers: [],
         productName: "Клубничное облако",
         price: "1250 " + .rub,
         oldPrice: "1400 " + .rub,
-        sellerName: RegisterUserRequest.mockData.nickname,
+        seller: .mockData,
         description: .description,
-        reviewInfo: .mockData,
-        similarProducts: []
+        similarProducts: [], 
+        reviewInfo: .clear
     )
 }
 
