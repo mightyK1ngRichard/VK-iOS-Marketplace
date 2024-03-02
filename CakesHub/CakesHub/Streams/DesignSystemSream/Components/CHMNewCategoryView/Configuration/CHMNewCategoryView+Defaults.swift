@@ -19,7 +19,7 @@ extension CHMNewCategoryView.Configuration {
     ///   - title: title of the category view
     /// - Returns: configuration of the view
     static func basic(
-        imageKind: MKRImageView.Configuration.ImageKind,
+        imageKind: ImageKind,
         title: String
     ) -> Self {
         modify(.clear) {

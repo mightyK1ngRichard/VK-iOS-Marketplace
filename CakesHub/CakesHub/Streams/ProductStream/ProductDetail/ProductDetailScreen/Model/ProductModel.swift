@@ -10,26 +10,38 @@ import SwiftUI
 import UIKit
 
 struct ProductModel: Identifiable, Hashable {
-    let id              = UUID()
-    var productID       : Int
-    var images          : [ProductImage] = []
-    var badgeText       : String = .clear
-    var isFavorite      : Bool = false
-    var pickers         : [String] = []
-    var productName     : String = .clear
-    var price           : String = .clear
-    var oldPrice        : String?
-    var sellerName      : String = .clear
-    var description     : String = .clear
-    var reviewInfo      : ProductReviewsModel = .clear
-    var similarProducts : [SimilarCard] = []
+    let id = UUID()
+    /// ID с бэка
+    var productID: Int
+    /// Картинки товара
+    var images: [ProductImage] = []
+    /// Бейдж с информацией
+    var badgeText: String = .clear
+    /// Флаг нравится
+    var isFavorite: Bool = false
+    /// Фильтры торта
+    var pickers: [String] = []
+    /// Название торта
+    var productName: String = .clear
+    /// Цена торта
+    var price: String = .clear
+    /// Старая цена торта
+    var oldPrice: String?
+    /// Имя продовца
+    var sellerName: String = .clear
+    /// Описание товара
+    var description: String = .clear
+    /// Оценки товара
+    var reviewInfo: ProductReviewsModel = .clear
+    /// Схожие товары
+    var similarProducts: [SimilarCard] = []
 }
 
 extension ProductModel {
 
     struct ProductImage: Identifiable {
         let id = UUID()
-        var kind: MKRImageView.Configuration.ImageKind
+        var kind: ImageKind
     }
 
     struct SimilarCard: Identifiable {

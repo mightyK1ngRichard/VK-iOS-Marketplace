@@ -18,7 +18,7 @@ extension CHMNewProductCard.Configuration {
     ///   - imageSize: image size
     /// - Returns: configuration of the view
     static func basic(
-        imageKind: MKRImageView.Configuration.ImageKind,
+        imageKind: ImageKind,
         imageSize: CGSize,
         productText: ProductText,
         badgeViewConfiguration: CHMBadgeView.Configuration = .clear,
@@ -39,7 +39,7 @@ extension CHMNewProductCard.Configuration {
 
 private extension MKRImageView.Configuration {
 
-    static func imageConfiguration(_ kind: MKRImageView.Configuration.ImageKind, _ imageSize: CGSize) -> Self {
+    static func imageConfiguration(_ kind: ImageKind, _ imageSize: CGSize) -> Self {
         .basic(
             kind: kind, 
             imageSize: imageSize,

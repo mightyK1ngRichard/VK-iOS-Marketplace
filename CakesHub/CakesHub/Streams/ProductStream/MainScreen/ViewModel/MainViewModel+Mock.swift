@@ -9,6 +9,8 @@
 import SwiftUI
 import UIKit
 
+#if DEBUG
+
 extension MainViewModel {
 
     static let mockData = MainViewModel()
@@ -142,3 +144,5 @@ private extension [String] {
 
     static let pickers = ["Size", "Color"]
 }
+
+#endif

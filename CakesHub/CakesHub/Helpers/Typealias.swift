@@ -14,3 +14,4 @@ typealias CHMIntBlock = (Int) -> Void
 typealias CHMBoolBlock = (Bool) -> Void
 typealias CHMGenericBlock<T> = (T) -> Void
 typealias CHMBinding<T> = (Binding<T>) -> Void
+typealias CHMResultBlock<T, T1: Error> = (Result<T, T1>) -> Void

@@ -19,14 +19,11 @@ extension MKRImageView {
 
 // MARK: - Image Kind
 
-extension MKRImageView.Configuration {
-
-    enum ImageKind {
-        case url(URL?)
-        case image(Image?)
-        case uiImage(UIImage?)
-        case clear
-    }
+enum ImageKind {
+    case url(URL?)
+    case image(Image?)
+    case uiImage(UIImage?)
+    case clear
 }
 
 // MARK: - Image Shape

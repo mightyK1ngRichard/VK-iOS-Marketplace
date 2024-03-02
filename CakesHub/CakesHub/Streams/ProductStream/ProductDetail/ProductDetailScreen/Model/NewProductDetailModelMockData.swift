@@ -8,6 +8,8 @@
 
 import Foundation
 
+#if DEBUG
+
 extension ProductDetailScreen.ViewModel {
 
     static let mockData = ProductDetailScreen.ViewModel(data: .mockData)
@@ -73,3 +75,5 @@ private extension [String] {
 
     static let pickers = ["Size", "Color"]
 }
+
+#endif
