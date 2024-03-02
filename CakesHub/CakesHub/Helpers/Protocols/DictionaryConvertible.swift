@@ -9,6 +9,7 @@ import Foundation
 
 protocol DictionaryConvertible {
     var dictionaryRepresentation: [String: Any] { get }
+    init?(dictionary: [String: Any])
 }
 
 extension DictionaryConvertible {

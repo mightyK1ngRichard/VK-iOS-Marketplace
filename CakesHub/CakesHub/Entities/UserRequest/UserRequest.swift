@@ -18,6 +18,23 @@ struct UserRequest: DictionaryConvertible, ClearConfigurationProtocol {
     static let clear = UserRequest()
 }
 
+// MARK: - DictionaryConvertible
+
+extension UserRequest {
+
+    init?(dictionary: [String: Any]) {
+        guard let id = dictionary["id"] as? String else { return nil }
+        self.init(
+            id: id,
+            name: dictionary["name"] as? String ?? .clear,
+            login: dictionary["login"] as? String ?? .clear,
+            password: dictionary["password"] as? String ?? .clear,
+            image: dictionary["login"] as? String,
+            phone: dictionary["phone"] as? String ?? .clear
+        )
+    }
+}
+
 // MARK: - MockData
 
 #if DEBUG

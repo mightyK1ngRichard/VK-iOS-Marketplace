@@ -3,6 +3,7 @@
 //  CakesHub
 //
 //  Created by Dmitriy Permyakov on 27.12.2023.
+//  Copyright 2024 © VK Team CakesHub. All rights reserved.
 //
 
 import Foundation
@@ -13,7 +14,7 @@ import SwiftUI
 // MARK: - CakeServiceProtocol
 
 protocol CakeServiceProtocol {
-//    func getCakesList(completion: @escaping CHMResultBlock<[ProductModel], APIError>)
+    func getCakesList() async throws -> [ProductRequest]
     func createCake(cake: ProductRequest, completion: @escaping (Error?) -> Void)
 }
 
@@ -22,7 +23,6 @@ protocol CakeServiceProtocol {
 final class CakeService {
 
     static var shared = CakeService()
-    private let firestore = Firestore.firestore()
     private let storage = Storage.storage()
 
     private init() {}
@@ -31,6 +31,13 @@ final class CakeService {
 // MARK: - Methods
 
 extension CakeService: CakeServiceProtocol {
+
+    /// Getting a list of cakes
+    /// - Parameter completion: plenty of cakes
+    func getCakesList() async throws -> [ProductRequest] {
+        let snapshot = try await FirestoreCollections.products.collection.getDocuments()
+        return snapshot.documents.compactMap { ProductRequest(dictionary: $0.data()) }
+    }
 
     /// Cake creation
     /// - Parameters:
@@ -69,12 +76,10 @@ extension CakeService: CakeServiceProtocol {
             var firebaseCakeDocument = cake
             firebaseCakeDocument.images = .strings(images)
             let document = firebaseCakeDocument.dictionaryRepresentation
-            self.firestore
-                .collection(FirestoreCollections.products.rawValue)
-                .addDocument(
-                    data: document,
-                    completion: completion
-                )
+            FirestoreCollections.products.collection.addDocument(
+                data: document,
+                completion: completion
+            )
         }
     }
 

@@ -69,3 +69,85 @@ extension ProductRequest {
         case clear
     }
 }
+
+// MARK: - DictionaryConvertible
+
+extension ProductRequest.ProductReviewsRequest {
+
+    init?(dictionary: [String: Any]) {
+        let comments = dictionary["comments"] as? [[String: Any]] ?? []
+        self.init(
+            countFiveStars: dictionary["countFiveStars"] as? Int ?? 0,
+            countFourStars: dictionary["countFourStars"] as? Int ?? 0,
+            countThreeStars: dictionary["countThreeStars"] as? Int ?? 0,
+            countTwoStars: dictionary["countTwoStars"] as? Int ?? 0,
+            countOneStars: dictionary["countOneStars"] as? Int ?? 0,
+            countOfComments: dictionary["countOfComments"] as? Int ?? 0,
+            comments: comments.compactMap { .init(dictionary: $0) }
+        )
+    }
+}
+
+extension ProductRequest.CommentInfoRequest {
+
+    init?(dictionary: [String: Any]) {
+        self.init(
+            userName: dictionary["userName"] as? String ?? .clear,
+            date: dictionary["date"] as? String ?? .clear,
+            description: dictionary["description"] as? String ?? .clear,
+            countFillStars: dictionary["countFillStars"] as? Int ?? 0,
+            feedbackCount: dictionary["feedbackCount"] as? Int ?? 0
+        )
+    }
+}
+
+extension ProductRequest.ImageKindRequest {
+
+    init?(dictionary: [String: Any]) {
+        guard let strings = dictionary["strings"] as? [String] else {
+            return nil
+        }
+        let urls = strings.compactMap { URL(string: $0) }
+        self = .url(urls)
+    }
+}
+
+extension ProductRequest {
+
+    init?(dictionary: [String: Any]) {
+        var images: ProductRequest.ImageKindRequest?
+        if let imagesDictionary = dictionary["images"] as? [String: Any] {
+            images = ProductRequest.ImageKindRequest(dictionary: imagesDictionary)
+        }
+        let badgeText = dictionary["badgeText"] as? String ?? .clear
+        let pickers = dictionary["pickers"] as? [String] ?? []
+        let productName = dictionary["productName"] as? String ?? .clear
+        let price = dictionary["price"] as? String ?? .clear
+        let oldPrice = dictionary["price"] as? String
+        let weight = dictionary["weight"] as? String
+        var user: UserRequest?
+        if let sellerDict = dictionary["seller"] as? [String: Any] {
+            user = UserRequest(dictionary: sellerDict)
+        }
+        let description = dictionary["description"] as? String ?? .clear
+        let similarProducts = dictionary["similarProducts"] as? [String] ?? []
+        var reviewInfo: ProductReviewsRequest?
+        if let reviewInfoDict = dictionary["reviewInfo"] as? [String: Any] {
+            reviewInfo = ProductReviewsRequest(dictionary: reviewInfoDict)
+        }
+
+        self.init(
+            images: images ?? .clear,
+            badgeText: badgeText,
+            pickers: pickers,
+            productName: productName,
+            price: price,
+            oldPrice: oldPrice,
+            weight: weight,
+            seller: user ?? .clear,
+            description: description,
+            similarProducts: similarProducts,
+            reviewInfo: reviewInfo ?? .clear
+        )
+    }
+}
