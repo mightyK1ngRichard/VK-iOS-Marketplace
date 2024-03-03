@@ -36,7 +36,11 @@ extension CakeService: CakeServiceProtocol {
     /// - Parameter completion: plenty of cakes
     func getCakesList() async throws -> [ProductRequest] {
         let snapshot = try await FirestoreCollections.products.collection.getDocuments()
-        return snapshot.documents.compactMap { ProductRequest(dictionary: $0.data()) }
+        return snapshot.documents.compactMap {
+            var product = ProductRequest(dictionary: $0.data())
+            product?.documentID = $0.documentID
+            return product
+        }
     }
 
     /// Cake creation

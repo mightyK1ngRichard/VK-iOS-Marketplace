@@ -38,7 +38,7 @@ extension UserRequest {
 // MARK: - MockData
 
 #if DEBUG
-extension UserRequest {
+extension UserRequest: Mockable {
 
     static let mockData = UserRequest(
         id: "8n5di1sb8ya1I9Tc2uR8TWpgtsK2",

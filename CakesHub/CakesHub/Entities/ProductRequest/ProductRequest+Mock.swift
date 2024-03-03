@@ -1,5 +1,5 @@
 //
-//  ProductRequest+MockData.swift
+//  ProductRequest+Mock.swift
 //  CakesHub
 //
 //  Created by Dmitriy Permyakov on 02.03.2024.
@@ -10,7 +10,7 @@ import UIKit
 
 #if DEBUG
 
-extension ProductRequest {
+extension ProductRequest: Mockable {
 
     static let mockData = ProductRequest(
         images: .images([

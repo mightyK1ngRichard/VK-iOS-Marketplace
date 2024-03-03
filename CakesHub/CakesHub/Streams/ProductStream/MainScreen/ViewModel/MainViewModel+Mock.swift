@@ -11,14 +11,14 @@ import UIKit
 
 #if DEBUG
 
-extension MainViewModel {
+extension MainViewModel: Mockable {
 
     static let mockData = MainViewModel()
 }
 
 // MARK: - Mock Data
 
-extension CHMBigBannerView.Configuration {
+extension CHMBigBannerView.Configuration: Mockable {
 
     static let mockData = CHMBigBannerView.Configuration.basic(
         imageKind: .image(Image("Big Banner")),

@@ -1,5 +1,5 @@
 //
-//  NewProductDetailModelMockData.swift
+//  NewProductDetailModel+Mock.swift
 //  CakesHub
 //
 //  Created by Dmitriy Permyakov on 04.02.2024.
@@ -10,12 +10,12 @@ import Foundation
 
 #if DEBUG
 
-extension ProductDetailScreen.ViewModel {
+extension ProductDetailScreen.ViewModel: Mockable {
 
     static let mockData = ProductDetailScreen.ViewModel(data: .mockData)
 }
 
-extension ProductModel {
+extension ProductModel: Mockable {
 
     static let mockData = ProductModel(
         productID: 0,

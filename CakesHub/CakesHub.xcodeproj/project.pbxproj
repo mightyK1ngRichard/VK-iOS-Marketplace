@@ -84,7 +84,7 @@
 		E51B33472B7E62AF0028E8C7 /* ProductReviewsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51B33382B7E62AF0028E8C7 /* ProductReviewsScreen.swift */; };
 		E51B33482B7E62AF0028E8C7 /* ProductDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51B333B2B7E62AF0028E8C7 /* ProductDetailViewModel.swift */; };
 		E51B33492B7E62AF0028E8C7 /* ProductModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51B333D2B7E62AF0028E8C7 /* ProductModel.swift */; };
-		E51B334A2B7E62AF0028E8C7 /* NewProductDetailModelMockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51B333E2B7E62AF0028E8C7 /* NewProductDetailModelMockData.swift */; };
+		E51B334A2B7E62AF0028E8C7 /* NewProductDetailModel+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51B333E2B7E62AF0028E8C7 /* NewProductDetailModel+Mock.swift */; };
 		E51B334B2B7E62AF0028E8C7 /* ProductDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51B33402B7E62AF0028E8C7 /* ProductDetailScreen.swift */; };
 		E51B334C2B7E62AF0028E8C7 /* LikeIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51B33422B7E62AF0028E8C7 /* LikeIcon.swift */; };
 		E51B334D2B7E62AF0028E8C7 /* PickersSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51B33432B7E62AF0028E8C7 /* PickersSectionView.swift */; };
@@ -99,6 +99,7 @@
 		E530C7302B935DCD00658817 /* DictionaryConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = E530C72F2B935DCD00658817 /* DictionaryConvertible.swift */; };
 		E56D0FF72B80CF6500B803EF /* CategoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E56D0FF62B80CF6500B803EF /* CategoriesView.swift */; };
 		E56D0FF92B80D0A100B803EF /* CategoriesTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = E56D0FF82B80D0A100B803EF /* CategoriesTab.swift */; };
+		E57C920F2B93C5CB00EC90F5 /* SwiftPrettyPrint in Frameworks */ = {isa = PBXBuildFile; productRef = E57C920E2B93C5CB00EC90F5 /* SwiftPrettyPrint */; };
 		E59AEC592B92AA2900760E61 /* ProductRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59AEC582B92AA2900760E61 /* ProductRequest.swift */; };
 		E59AEC5B2B92AE5F00760E61 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E59AEC5A2B92AE5F00760E61 /* GoogleService-Info.plist */; };
 		E59AEC5E2B92AFC900760E61 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = E59AEC5D2B92AFC900760E61 /* FirebaseAuth */; };
@@ -114,8 +115,12 @@
 		E59AEC772B92B96A00760E61 /* PlaygroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59AEC762B92B96A00760E61 /* PlaygroundView.swift */; };
 		E59AEC7A2B92B99F00760E61 /* CakeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59AEC792B92B99F00760E61 /* CakeService.swift */; };
 		E59AEC7C2B92BF9F00760E61 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59AEC7B2B92BF9F00760E61 /* Logger.swift */; };
-		E59AEC7F2B92C4A600760E61 /* ProductRequest+MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59AEC7E2B92C4A600760E61 /* ProductRequest+MockData.swift */; };
+		E59AEC7F2B92C4A600760E61 /* ProductRequest+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59AEC7E2B92C4A600760E61 /* ProductRequest+Mock.swift */; };
 		E59AEC812B92C65800760E61 /* UIImage+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59AEC802B92C65800760E61 /* UIImage+Additions.swift */; };
+		E5E219D42B940FF000BE9ACE /* CategoriesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E219D32B940FF000BE9ACE /* CategoriesViewModel.swift */; };
+		E5E219D62B9410CE00BE9ACE /* CategoryCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E219D52B9410CE00BE9ACE /* CategoryCardModel.swift */; };
+		E5E219D82B94118000BE9ACE /* Mockable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E219D72B94118000BE9ACE /* Mockable.swift */; };
+		E5E219DA2B94137500BE9ACE /* CategoriesViewModel+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E219D92B94137500BE9ACE /* CategoriesViewModel+Mock.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -197,7 +202,7 @@
 		E51B33382B7E62AF0028E8C7 /* ProductReviewsScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductReviewsScreen.swift; sourceTree = "<group>"; };
 		E51B333B2B7E62AF0028E8C7 /* ProductDetailViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductDetailViewModel.swift; sourceTree = "<group>"; };
 		E51B333D2B7E62AF0028E8C7 /* ProductModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductModel.swift; sourceTree = "<group>"; };
-		E51B333E2B7E62AF0028E8C7 /* NewProductDetailModelMockData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewProductDetailModelMockData.swift; sourceTree = "<group>"; };
+		E51B333E2B7E62AF0028E8C7 /* NewProductDetailModel+Mock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NewProductDetailModel+Mock.swift"; sourceTree = "<group>"; };
 		E51B33402B7E62AF0028E8C7 /* ProductDetailScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductDetailScreen.swift; sourceTree = "<group>"; };
 		E51B33422B7E62AF0028E8C7 /* LikeIcon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LikeIcon.swift; sourceTree = "<group>"; };
 		E51B33432B7E62AF0028E8C7 /* PickersSectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickersSectionView.swift; sourceTree = "<group>"; };
@@ -223,8 +228,12 @@
 		E59AEC762B92B96A00760E61 /* PlaygroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaygroundView.swift; sourceTree = "<group>"; };
 		E59AEC792B92B99F00760E61 /* CakeService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CakeService.swift; sourceTree = "<group>"; };
 		E59AEC7B2B92BF9F00760E61 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
-		E59AEC7E2B92C4A600760E61 /* ProductRequest+MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProductRequest+MockData.swift"; sourceTree = "<group>"; };
+		E59AEC7E2B92C4A600760E61 /* ProductRequest+Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProductRequest+Mock.swift"; sourceTree = "<group>"; };
 		E59AEC802B92C65800760E61 /* UIImage+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Additions.swift"; sourceTree = "<group>"; };
+		E5E219D32B940FF000BE9ACE /* CategoriesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesViewModel.swift; sourceTree = "<group>"; };
+		E5E219D52B9410CE00BE9ACE /* CategoryCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCardModel.swift; sourceTree = "<group>"; };
+		E5E219D72B94118000BE9ACE /* Mockable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mockable.swift; sourceTree = "<group>"; };
+		E5E219D92B94137500BE9ACE /* CategoriesViewModel+Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CategoriesViewModel+Mock.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -232,6 +241,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E57C920F2B93C5CB00EC90F5 /* SwiftPrettyPrint in Frameworks */,
 				E59AEC602B92AFC900760E61 /* FirebaseDatabase in Frameworks */,
 				E59AEC642B92AFC900760E61 /* FirebaseStorage in Frameworks */,
 				E59AEC5E2B92AFC900760E61 /* FirebaseAuth in Frameworks */,
@@ -660,6 +670,7 @@
 			children = (
 				E51B332C2B7E603E0028E8C7 /* Configurable.swift */,
 				E51B332D2B7E603E0028E8C7 /* ClearConfigurationProtocol.swift */,
+				E5E219D72B94118000BE9ACE /* Mockable.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -730,7 +741,7 @@
 			isa = PBXGroup;
 			children = (
 				E51B333D2B7E62AF0028E8C7 /* ProductModel.swift */,
-				E51B333E2B7E62AF0028E8C7 /* NewProductDetailModelMockData.swift */,
+				E51B333E2B7E62AF0028E8C7 /* NewProductDetailModel+Mock.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -784,6 +795,8 @@
 		E56D0FF42B80CF5200B803EF /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				E5E219D32B940FF000BE9ACE /* CategoriesViewModel.swift */,
+				E5E219D92B94137500BE9ACE /* CategoriesViewModel+Mock.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -792,6 +805,7 @@
 			isa = PBXGroup;
 			children = (
 				E56D0FF82B80D0A100B803EF /* CategoriesTab.swift */,
+				E5E219D52B9410CE00BE9ACE /* CategoryCardModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -845,7 +859,7 @@
 			isa = PBXGroup;
 			children = (
 				E59AEC582B92AA2900760E61 /* ProductRequest.swift */,
-				E59AEC7E2B92C4A600760E61 /* ProductRequest+MockData.swift */,
+				E59AEC7E2B92C4A600760E61 /* ProductRequest+Mock.swift */,
 			);
 			path = ProductRequest;
 			sourceTree = "<group>";
@@ -871,6 +885,7 @@
 				E59AEC5F2B92AFC900760E61 /* FirebaseDatabase */,
 				E59AEC612B92AFC900760E61 /* FirebaseFirestore */,
 				E59AEC632B92AFC900760E61 /* FirebaseStorage */,
+				E57C920E2B93C5CB00EC90F5 /* SwiftPrettyPrint */,
 			);
 			productName = CakesHub;
 			productReference = E51B326B2B7E5DFC0028E8C7 /* CakesHub.app */;
@@ -902,6 +917,7 @@
 			mainGroup = E51B32622B7E5DFC0028E8C7;
 			packageReferences = (
 				E59AEC5C2B92AFC900760E61 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				E57C920D2B93C5CB00EC90F5 /* XCRemoteSwiftPackageReference "SwiftPrettyPrint" */,
 			);
 			productRefGroup = E51B326C2B7E5DFC0028E8C7 /* Products */;
 			projectDirPath = "";
@@ -957,7 +973,7 @@
 				E51B32E42B7E5FEF0028E8C7 /* CHMBadgeView+Defaults.swift in Sources */,
 				E59AEC7C2B92BF9F00760E61 /* Logger.swift in Sources */,
 				E51B331E2B7E60010028E8C7 /* Optional+Extensions.swift in Sources */,
-				E59AEC7F2B92C4A600760E61 /* ProductRequest+MockData.swift in Sources */,
+				E59AEC7F2B92C4A600760E61 /* ProductRequest+Mock.swift in Sources */,
 				E51B33202B7E60010028E8C7 /* URL+Extensions.swift in Sources */,
 				E51B32DB2B7E5FEF0028E8C7 /* CHMBigBannerView+Configuration.swift in Sources */,
 				E51B32F82B7E5FEF0028E8C7 /* MKRImageView.swift in Sources */,
@@ -968,6 +984,7 @@
 				E51B334D2B7E62AF0028E8C7 /* PickersSectionView.swift in Sources */,
 				E51B32DC2B7E5FEF0028E8C7 /* CHMBigBannerView+Defaults.swift in Sources */,
 				E51B334C2B7E62AF0028E8C7 /* LikeIcon.swift in Sources */,
+				E5E219DA2B94137500BE9ACE /* CategoriesViewModel+Mock.swift in Sources */,
 				E51B33492B7E62AF0028E8C7 /* ProductModel.swift in Sources */,
 				E51B32EE2B7E5FEF0028E8C7 /* CHMRatingReviewsView+Defaults.swift in Sources */,
 				E51B32D42B7E5FEF0028E8C7 /* CHMNewProductCard+Configuration.swift in Sources */,
@@ -997,13 +1014,14 @@
 				E59AEC722B92B25600760E61 /* FirestoreCollections.swift in Sources */,
 				E59AEC682B92B17200760E61 /* AuthService.swift in Sources */,
 				E51B335A2B7E63300028E8C7 /* Optional+Extenstions.swift in Sources */,
+				E5E219D62B9410CE00BE9ACE /* CategoryCardModel.swift in Sources */,
 				E51B335C2B7E63300028E8C7 /* View+Extentions.swift in Sources */,
 				E51B33482B7E62AF0028E8C7 /* ProductDetailViewModel.swift in Sources */,
 				E51B32F02B7E5FEF0028E8C7 /* CHMRatingReviewsView.swift in Sources */,
 				E51B32EF2B7E5FEF0028E8C7 /* CHMRatingReviewsView+Preview.swift in Sources */,
 				E51B32E22B7E5FEF0028E8C7 /* CHMProductDescriptionView.swift in Sources */,
 				E51B32EB2B7E5FEF0028E8C7 /* CHMPicker+Preview.swift in Sources */,
-				E51B334A2B7E62AF0028E8C7 /* NewProductDetailModelMockData.swift in Sources */,
+				E51B334A2B7E62AF0028E8C7 /* NewProductDetailModel+Mock.swift in Sources */,
 				E51B32CF2B7E5FEF0028E8C7 /* CHMCommentView.swift in Sources */,
 				E51B33172B7E60010028E8C7 /* UIColor+Additions.swift in Sources */,
 				E51B33122B7E60010028E8C7 /* CGFloat+Extenstions.swift in Sources */,
@@ -1011,10 +1029,12 @@
 				E51B33442B7E62AF0028E8C7 /* ProductReviewsViewModel.swift in Sources */,
 				E51B32CD2B7E5FEF0028E8C7 /* CHMProductButton.swift in Sources */,
 				E51B32F52B7E5FEF0028E8C7 /* MKRImageView+Configuration.swift in Sources */,
+				E5E219D82B94118000BE9ACE /* Mockable.swift in Sources */,
 				E51B32D12B7E5FEF0028E8C7 /* CHMCommentView+Defaults.swift in Sources */,
 				E51B33462B7E62AF0028E8C7 /* ProductReviewsModelMockData.swift in Sources */,
 				E59AEC752B92B7A400760E61 /* UserRequest.swift in Sources */,
 				E59AEC772B92B96A00760E61 /* PlaygroundView.swift in Sources */,
+				E5E219D42B940FF000BE9ACE /* CategoriesViewModel.swift in Sources */,
 				E51B332F2B7E603E0028E8C7 /* ClearConfigurationProtocol.swift in Sources */,
 				E51B335B2B7E63300028E8C7 /* UIDevice+Extenstions.swift in Sources */,
 				E51B33592B7E63300028E8C7 /* CGFloat+Extentions.swift in Sources */,
@@ -1239,6 +1259,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		E57C920D2B93C5CB00EC90F5 /* XCRemoteSwiftPackageReference "SwiftPrettyPrint" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/YusukeHosonuma/SwiftPrettyPrint.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.4.0;
+			};
+		};
 		E59AEC5C2B92AFC900760E61 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
@@ -1250,6 +1278,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		E57C920E2B93C5CB00EC90F5 /* SwiftPrettyPrint */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E57C920D2B93C5CB00EC90F5 /* XCRemoteSwiftPackageReference "SwiftPrettyPrint" */;
+			productName = SwiftPrettyPrint;
+		};
 		E59AEC5D2B92AFC900760E61 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E59AEC5C2B92AFC900760E61 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

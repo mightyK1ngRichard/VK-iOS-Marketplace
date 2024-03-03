@@ -16,7 +16,7 @@ struct RegisterUserRequest {
 // MARK: - MockData
 
 #if DEBUG
-extension RegisterUserRequest {
+extension RegisterUserRequest: Mockable {
     
     /// UID: 8n5di1sb8ya1I9Tc2uR8TWpgtsK2
     static let mockData = RegisterUserRequest(nickname: "mightyK1ngRichard", email: "dimapermyakov55@gmail.com", password: "123456789")

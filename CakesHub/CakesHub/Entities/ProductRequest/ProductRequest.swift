@@ -10,6 +10,8 @@ import SwiftUI
 import Firebase
 
 struct ProductRequest: DictionaryConvertible, ClearConfigurationProtocol {
+    /// ID firebase документа
+    var documentID: String = .clear
     /// Картинки товара
     var images: ImageKindRequest = .clear
     /// Бейдж с информацией

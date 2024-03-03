@@ -12,7 +12,12 @@ struct CategoriesView: View {
     @State private var selectedTab: CategoriesTab?
     @State private var tabBarProgess: CGFloat = .zero
     @State private var showSearchBar: Bool = false
-    @State private var searchText: String = ""
+    @State private var searchText: String = .clear
+    @StateObject var viewModel: CategoriesViewModel
+
+    init(viewModel: CategoriesViewModel = CategoriesViewModel()) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -24,11 +29,11 @@ struct CategoriesView: View {
 
                 ScrollView(.horizontal) {
                     LazyHStack(spacing: 0) {
-                        CategoryContentBlock
+                        FirstSection
                             .id(CategoriesTab.women)
                             .containerRelativeFrame(.horizontal)
 
-                        CategoryContentBlock
+                        SecondSection
                             .id(CategoriesTab.men)
                             .containerRelativeFrame(.horizontal)
 
@@ -50,6 +55,7 @@ struct CategoriesView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Color.bgMainColor)
+        .onAppear(perform: viewModel.fetchSections)
     }
 }
 
@@ -62,7 +68,9 @@ extension CategoriesView {
             HStack {
                 Spacer()
                 Button {
-                    showSearchBar.toggle()
+                    withAnimation {
+                        showSearchBar.toggle()
+                    }
                 } label: {
                     Image.magnifier
                         .renderingMode(.template)
@@ -145,12 +153,43 @@ extension CategoriesView {
                 .padding(.bottom, -100)
         }
     }
+
+    var FirstSection: some View {
+        ScrollView {
+            LazyVStack(spacing: 16) {
+                ForEach(viewModel.firstSections) { section in
+                    CHMNewCategoryView(
+                        configuration: .basic(imageKind: section.image, title: section.title)
+                    )
+                    .padding(.horizontal)
+                }
+            }
+            .padding(.top)
+        }
+    }
+
+    // FIXME: Сделать по умному
+    var SecondSection: some View {
+        ScrollView {
+            LazyVStack(spacing: 16) {
+                ForEach(viewModel.secondSections) { section in
+                    CHMNewCategoryView(
+                        configuration: .basic(imageKind: section.image, title: section.title)
+                    )
+                    .padding(.horizontal)
+                }
+            }
+            .padding(.top)
+        }
+    }
 }
 
 // MARK: - Preview
 
 #Preview {
-    CategoriesView()
+    var viewModel = CategoriesViewModel()
+    return CategoriesView(viewModel: viewModel)
+        .onAppear(perform: viewModel.fetchPreviewData)
 }
 
 // MARK: - Constants

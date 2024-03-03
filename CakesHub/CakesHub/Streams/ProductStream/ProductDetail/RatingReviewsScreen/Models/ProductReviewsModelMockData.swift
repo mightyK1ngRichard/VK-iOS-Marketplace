@@ -12,7 +12,7 @@ import Foundation
 
 // MARK: - ProductReviewsModel
 
-extension ProductReviewsModel {
+extension ProductReviewsModel: Mockable {
 
     static let mockData = ProductReviewsModel(
         countFiveStars: 12,
