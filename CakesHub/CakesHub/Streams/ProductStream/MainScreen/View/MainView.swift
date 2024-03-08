@@ -8,21 +8,17 @@
 
 import SwiftUI
 
-final class Navigation: ObservableObject {
-    @Published var path = NavigationPath()
-}
-
 struct MainView: View, ViewModelable {
     typealias ViewModel = MainViewModel
 
-    @StateObject var nav = Navigation()
+    @EnvironmentObject private var nav: Navigation
     @StateObject var viewModel: ViewModel
     @State private var size: CGSize = .zero
 
     var body: some View {
         NavigationStack(path: $nav.path) {
             ScrollView {
-                VStack {
+                LazyVStack {
                     ForEach(viewModel.sections, id: \.self.id) { section in
                         switch section {
                         case .sales(let sales):
@@ -69,9 +65,12 @@ struct MainView: View, ViewModelable {
                 let vm = ProductDetailViewModel(data: card)
                 ProductDetailScreen(viewModel: vm)
             }
+            .onAppear {
+                withAnimation {
+                    nav.hideTabBar = false
+                }
+            }
         }
-        .environmentObject(nav)
-        .ignoresSafeArea()
         .viewSize(size: $size)
         .onAppear(perform: onAppear)
     }
@@ -116,7 +115,7 @@ private extension MainView {
                     .style(34, .bold)
                 Spacer()
                 Button {
-
+                    // TODO: Нажатие на секцию
                 } label: {
                     Text(buttonTitle)
                         .style(11, .regular)
@@ -159,7 +158,10 @@ private extension MainView {
                         )
                     )
                     .onTapGesture {
-                        nav.path.append(card)
+                        withAnimation {
+                            nav.hideTabBar = true
+                        }
+                        nav.addScreen(screen: card)
                     }
                 }
             }
@@ -208,7 +210,10 @@ private extension MainView {
 // MARK: - Preview
 
 #Preview {
-    MainView(viewModel: .mockData)
+    let vm = MainView.ViewModel()
+    vm.fetchPreviewData()
+    return MainView(viewModel: vm)
+        .environmentObject(Navigation())
 }
 
 // MARK: - Constants

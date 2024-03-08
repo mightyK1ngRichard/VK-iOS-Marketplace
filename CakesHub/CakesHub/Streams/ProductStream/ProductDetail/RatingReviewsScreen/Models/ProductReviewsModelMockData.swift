@@ -25,7 +25,7 @@ extension ProductReviewsModel: Mockable {
     )
 }
 
-// MARK: - CommentInfo
+// MARK: - Private Extenstions
 
 private extension [ProductReviewsModel.CommentInfo] {
 

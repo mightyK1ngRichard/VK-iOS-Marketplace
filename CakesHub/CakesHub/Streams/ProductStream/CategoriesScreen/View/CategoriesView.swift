@@ -187,9 +187,10 @@ extension CategoriesView {
 // MARK: - Preview
 
 #Preview {
-    var viewModel = CategoriesViewModel()
+    let viewModel = CategoriesViewModel()
     return CategoriesView(viewModel: viewModel)
         .onAppear(perform: viewModel.fetchPreviewData)
+        .environmentObject(Navigation())
 }
 
 // MARK: - Constants

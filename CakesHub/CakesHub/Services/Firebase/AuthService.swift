@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import FirebaseAuth
 import FirebaseFirestore
+import FirebaseAuth
 
 // MARK: - AuthServiceProtocol
 
