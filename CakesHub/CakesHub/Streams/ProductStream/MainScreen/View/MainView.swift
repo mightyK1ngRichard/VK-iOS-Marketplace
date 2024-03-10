@@ -16,9 +16,30 @@ struct MainView: View, ViewModelable {
     @State private var size: CGSize = .zero
 
     var body: some View {
+        MainView
+            .viewSize(size: $size)
+            .onAppear(perform: onAppear)
+    }
+}
+
+// MARK: - Network
+
+private extension MainView {
+
+    func onAppear() {
+        viewModel.startViewDidLoad()
+        viewModel.fetchData()
+    }
+}
+
+// MARK: - Subviews
+
+private extension MainView {
+
+    var MainView: some View {
         NavigationStack(path: $nav.path) {
             ScrollView {
-                LazyVStack {
+                VStack {
                     ForEach(viewModel.sections, id: \.self.id) { section in
                         switch section {
                         case .sales(let sales):
@@ -71,24 +92,7 @@ struct MainView: View, ViewModelable {
                 }
             }
         }
-        .viewSize(size: $size)
-        .onAppear(perform: onAppear)
     }
-}
-
-// MARK: - Network
-
-private extension MainView {
-
-    func onAppear() {
-        viewModel.startViewDidLoad()
-        viewModel.fetchData()
-    }
-}
-
-// MARK: - Subviews
-
-private extension MainView {
 
     func SectionView(
         title: String,
@@ -136,36 +140,56 @@ private extension MainView {
         ScrollView(.horizontal) {
             LazyHStack(spacing: 16) {
                 ForEach(cards) { card in
-                    CHMNewProductCard(
-                        configuration: .basic(
-                            imageKind: card.images.first?.kind ?? .clear,
-                            imageSize: CGSize(width: size.width * .fractionWidth,
-                                              height: size.height * .fractionHeight),
-                            productText: .init(
-                                seller: card.sellerName,
-                                productName: card.productName,
-                                productPrice: card.price,
-                                productOldPrice: card.oldPrice
-                            ),
-                            badgeViewConfiguration: .basic(text: card.badgeText, kind: badgeKind),
-                            productButtonConfiguration: .basic(
-                                kind: .favorite(isSelected: card.isFavorite)
-                            ),
-                            starsViewConfiguration: .basic(
-                                kind: .init(rawValue: card.starsCount) ?? .zero,
-                                feedbackCount: card.reviewInfo.feedbackCounter
-                            )
-                        )
+                    ProductCard(
+                        for: card,
+                        badgeConfiguration: .basic(text: card.badgeText, kind: badgeKind)
                     )
-                    .onTapGesture {
-                        withAnimation {
-                            nav.hideTabBar = true
-                        }
-                        nav.addScreen(screen: card)
-                    }
                 }
             }
             .padding(.horizontal, .intrinsicHPaddings)
+        }
+    }
+
+    @ViewBuilder
+    func ProductCard(
+        for card: ProductModel,
+        badgeConfiguration: CHMBadgeView.Configuration
+    ) -> some View {
+        if viewModel.isShimmering {
+            CHMNewProductCard(
+                configuration: .shimmering(
+                    imageSize: CGSize(width: size.width * .fractionWidth,
+                                      height: size.height * .fractionHeight)
+                )
+            )
+        } else {
+            CHMNewProductCard(
+                configuration: .basic(
+                    imageKind: card.images.first?.kind ?? .clear,
+                    imageSize: CGSize(width: size.width * .fractionWidth,
+                                      height: size.height * .fractionHeight),
+                    productText: .init(
+                        seller: card.sellerName,
+                        productName: card.productName,
+                        productPrice: card.price,
+                        productOldPrice: card.oldPrice
+                    ),
+                    badgeViewConfiguration: badgeConfiguration,
+                    productButtonConfiguration: .basic(
+                        kind: .favorite(isSelected: card.isFavorite)
+                    ),
+                    starsViewConfiguration: .basic(
+                        kind: .init(rawValue: card.starsCount) ?? .zero,
+                        feedbackCount: card.reviewInfo.feedbackCounter
+                    )
+                )
+            )
+            .onTapGesture {
+                withAnimation {
+                    nav.hideTabBar = true
+                }
+                nav.addScreen(screen: card)
+            }
         }
     }
 
@@ -182,26 +206,7 @@ private extension MainView {
             spacing: .intrinsicHPaddings
         ) {
             ForEach(cards) { card in
-                CHMNewProductCard(
-                    configuration: .basic(
-                        imageKind: card.images.first?.kind ?? .clear,
-                        imageSize: CGSize(width: size.width * .fractionWidth,
-                                          height: size.height * .fractionHeight),
-                        productText: .init(
-                            seller: card.sellerName,
-                            productName: card.productName,
-                            productPrice: card.price
-                        ),
-                        productButtonConfiguration: .basic(kind: .favorite(isSelected: card.isFavorite)),
-                        starsViewConfiguration: .basic(
-                            kind: .init(rawValue: card.starsCount) ?? .zero,
-                            feedbackCount: card.reviewInfo.feedbackCounter
-                        )
-                    )
-                )
-                .onTapGesture {
-                    nav.path.append(card)
-                }
+                ProductCard(for: card, badgeConfiguration: .clear)
             }
         }
     }

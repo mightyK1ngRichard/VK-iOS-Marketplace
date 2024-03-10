@@ -65,7 +65,11 @@ private extension CHMNewProductCard {
     var FooterBlockView: some View {
         VStack(alignment: .leading) {
             StartsBlockView
-            TextBlockView
+            if configuration.isShimmering {
+                ShimmeringTextBlock
+            } else {
+                TextBlockView
+            }
         }
     }
 
@@ -102,9 +106,33 @@ private extension CHMNewProductCard {
             }
         }
     }
+
+    var ShimmeringTextBlock: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Group {
+                ShimmeringView()
+                    .frame(width: 100, height: 8)
+
+                ShimmeringView()
+                    .frame(width: 130,  height: 12)
+
+                ShimmeringView()
+                    .frame(width: 40, height: 12)
+            }
+            .clipShape(.rect(cornerRadius: 7))
+        }
+    }
 }
 
 // MARK: - Preview
+
+#Preview {
+    CHMNewProductCard(
+        configuration: .shimmering(
+            imageSize: CGSize(width: 148, height: 184)
+        )
+    )
+}
 
 #Preview {
     CHMNewProductCard(

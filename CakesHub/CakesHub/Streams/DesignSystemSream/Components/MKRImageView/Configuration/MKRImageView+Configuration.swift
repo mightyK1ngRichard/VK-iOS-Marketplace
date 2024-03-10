@@ -14,6 +14,7 @@ extension MKRImageView {
         var imageShape: ImageShape = .capsule
         var imageSize: CGSize = .zero
         var contentMode: ContentMode = .fill
+        var isShimmering: Bool = false
     }
 }
 

@@ -22,4 +22,12 @@ extension MKRImageView.Configuration {
             $0.imageShape = imageShape
         }
     }
+
+    static func shimmering(imageSize: CGSize, imageShape: ImageShape = .rectangle) -> Self {
+        modify(.clear) {
+            $0.imageSize = imageSize
+            $0.imageShape = imageShape
+            $0.isShimmering = true
+        }
+    }
 }

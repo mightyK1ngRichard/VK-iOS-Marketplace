@@ -16,6 +16,10 @@ extension CHMNewProductCard.Configuration {
     /// - Parameters:
     ///   - imageKind: image kind
     ///   - imageSize: image size
+    ///   - productText: product info
+    ///   - badgeViewConfiguration: badge info
+    ///   - productButtonConfiguration: product button info
+    ///   - starsViewConfiguration: product rating
     /// - Returns: configuration of the view
     static func basic(
         imageKind: ImageKind,
@@ -31,6 +35,14 @@ extension CHMNewProductCard.Configuration {
             $0.productText = productText
             $0.productButtonConfiguration = productButtonConfiguration
             $0.starsViewConfiguration = starsViewConfiguration
+        }
+    }
+
+    static func shimmering(imageSize: CGSize) -> Self {
+        modify(.clear) {
+            $0.imageConfiguration = .shimmering(imageSize: imageSize, imageShape: .roundedRectangle(9))
+            $0.productButtonConfiguration = .shimmering
+            $0.starsViewConfiguration = .shimmering
         }
     }
 }

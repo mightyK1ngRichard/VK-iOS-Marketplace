@@ -37,6 +37,13 @@ struct MKRImageView_Previews: PreviewProvider {
                 )
             )
             .previewDisplayName("RoundedRectangle")
+
+            MKRImageView(
+                configuration: .shimmering(
+                    imageSize: CGSize(width: 150, height: 150)
+                )
+            )
+            .previewDisplayName("Shimmering")
         }
     }
 }

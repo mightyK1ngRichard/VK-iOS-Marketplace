@@ -35,6 +35,10 @@ struct CHMProductButtonPreview: PreviewProvider {
                     $0.iconColor = .red
                 }
             )
+
+            CHMProductButton(
+                configuration: .shimmering
+            )
         }
     }
 }

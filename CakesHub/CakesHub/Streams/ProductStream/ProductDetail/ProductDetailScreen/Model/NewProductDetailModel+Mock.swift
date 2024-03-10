@@ -40,6 +40,21 @@ extension ProductModel: Mockable {
             .init(configuration: .previewSimilarCard),
         ]
     )
+
+    static func emptyCards(id: Int) -> Self {
+        ProductModel(
+            productID: id,
+            images: [],
+            isFavorite: true,
+            pickers: .pickers,
+            productName: .clear,
+            price: .clear,
+            sellerName: .clear,
+            description: .clear,
+            reviewInfo: .clear,
+            similarProducts: []
+        )
+    }
 }
 
 // MARK: - CHMNewProductCard Configuration

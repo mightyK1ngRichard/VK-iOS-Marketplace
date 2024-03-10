@@ -21,6 +21,7 @@ protocol MainViewModelProtocol: AnyObject {
 final class MainViewModel: ObservableObject, ViewModelProtocol {
 
     @Published var sections: [Section] = []
+    private(set) var isShimmering: Bool = false
 
     init() {
         self.sections.reserveCapacity(3)
@@ -62,17 +63,20 @@ extension MainViewModel.Section {
 extension MainViewModel: MainViewModelProtocol {
 
     func startViewDidLoad() {
-        sections.insert(.sales([]), at: 0)
-        sections.insert(.news([]), at: 1)
-        sections.insert(.all([]), at: 2)
+        isShimmering = true
+        let shimmeringCards: [ProductModel] = (0...3).map { .emptyCards(id: $0) }
+        sections.insert(.sales(shimmeringCards), at: 0)
+        sections.insert(.news(shimmeringCards), at: 1)
+        sections.insert(.all(shimmeringCards), at: 2)
     }
 
     func fetchData(completion: CHMVoidBlock? = nil) {
-        DispatchQueue.global().asyncAfter(deadline: .now() + 1.2) {
+        DispatchQueue.global().asyncAfter(deadline: .now() + 5) {
             asyncMain {
                 self.sections[0] = .sales(.mockSalesData)
                 self.sections[1] = .news(.mockNewsData)
                 self.sections[2] = .all(.mockAllData)
+                self.isShimmering = false
                 completion?()
             }
         }
@@ -89,11 +93,12 @@ extension MainViewModel: MainViewModelProtocol {
 extension MainViewModel {
 
     func fetchPreviewData(completion: CHMVoidBlock? = nil) {
-        DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
+        DispatchQueue.global().asyncAfter(deadline: .now() + 5) {
             asyncMain {
                 self.sections[0] = .sales(.mockSalesData)
                 self.sections[1] = .news(.mockNewsData)
                 self.sections[2] = .all(.mockAllData)
+                self.isShimmering = false
                 completion?()
             }
         }
