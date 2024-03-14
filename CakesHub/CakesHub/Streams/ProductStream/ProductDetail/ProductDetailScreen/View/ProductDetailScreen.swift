@@ -86,6 +86,14 @@ private extension ProductDetailScreen {
     func didTapBuyButton() {
         viewModel.didTapBuyButton()
     }
+
+    func openRatingReviews() {
+        nav.addScreen(screen: String.ratingReviewsCell)
+    }
+
+    func openPreviousView() {
+        nav.openPreviousScreen()
+    }
 }
 
 // MARK: - Subviews
@@ -141,7 +149,7 @@ private extension ProductDetailScreen {
             LikeIcon(isSelected: $isPressedLike) {
                 didTapFavoriteIcon()
             }
-                .padding(.trailing)
+            .padding(.trailing)
         }
     }
 
@@ -176,12 +184,11 @@ private extension ProductDetailScreen {
             Divider()
             // FIXME: iOS-17: Применить корректный паттерн роутинга
             Button {
-                nav.path.append(String.ratingReviewsCell)
+                openRatingReviews()
             } label: {
                 MoreInfoCell(text: .ratingReviewsCell)
                     .padding(.horizontal)
             }
-
             Divider()
             MoreInfoCell(text: .sellerInfoCell)
                 .padding(.horizontal)
@@ -221,7 +228,7 @@ private extension ProductDetailScreen {
         ZStack {
             Button {
                 if nav.path.count >= 1 {
-                    nav.path.removeLast()
+                    openPreviousView()
                 }
             } label: {
                 Image.chevronLeft

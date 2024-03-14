@@ -15,7 +15,7 @@ extension CHMNewCategoryView {
         typealias OwnerViewType = CHMNewCategoryView
 
         /// Configuration of the image view
-        var imageKindConfiguration: MKRImageView.Configuration.ImageKind = .image(nil)
+        var imageKindConfiguration: ImageKind = .image(nil)
         var title: String = .clear
     }
 }

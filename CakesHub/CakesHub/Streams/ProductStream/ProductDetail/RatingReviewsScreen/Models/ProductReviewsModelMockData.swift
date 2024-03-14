@@ -8,9 +8,11 @@
 
 import Foundation
 
+#if DEBUG
+
 // MARK: - ProductReviewsModel
 
-extension ProductReviewsModel {
+extension ProductReviewsModel: Mockable {
 
     static let mockData = ProductReviewsModel(
         countFiveStars: 12,
@@ -23,7 +25,7 @@ extension ProductReviewsModel {
     )
 }
 
-// MARK: - CommentInfo
+// MARK: - Private Extenstions
 
 private extension [ProductReviewsModel.CommentInfo] {
 
@@ -49,3 +51,5 @@ private extension String {
     The dress is great! Very classy and comfortable. It fit perfectly! I'm 5'7" and 130 pounds. I am a 34B chest. This dress would be too long for those who are shorter but could be hemmed. I wouldn't recommend it for those big chested as I am smaller chested and it fit me perfectly. The underarms were not too wide and the dress was made well.
     """
 }
+
+#endif

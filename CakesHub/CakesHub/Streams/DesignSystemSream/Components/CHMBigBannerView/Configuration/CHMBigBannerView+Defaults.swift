@@ -20,7 +20,7 @@ extension CHMBigBannerView.Configuration {
     ///   - buttonTitle: title of the button
     /// - Returns: configuration of the view
     static func basic(
-        imageKind: MKRImageView.Configuration.ImageKind,
+        imageKind: ImageKind,
         bannerTitle: String,
         buttonTitle: String
     ) -> Self {

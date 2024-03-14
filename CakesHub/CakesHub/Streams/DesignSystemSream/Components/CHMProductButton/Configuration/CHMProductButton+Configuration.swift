@@ -26,6 +26,8 @@ extension CHMProductButton {
         var iconColor: Color = .clear
         /// Color of the shadow
         var shadowColor: Color = .clear
+        /// Shimmering flag
+        var isShimmering: Bool = false
     }
 }
 

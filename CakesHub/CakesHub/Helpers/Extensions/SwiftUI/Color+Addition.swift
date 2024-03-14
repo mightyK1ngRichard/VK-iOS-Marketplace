@@ -22,6 +22,8 @@ extension Color {
 extension Color {
 
     static let iconSecondary = Color(hexLight: 0x8E8E93, hexDarK: 0x8E8E93)
+    static let iconRed = Color(hexLight: 0xDB3022, hexDarK: 0xEF3651)
+    static let navigationBackButton = Color(hexLight: 0x222222, hexDarK: 0xF6F6F6)
 }
 
 // MARK: - Background Color

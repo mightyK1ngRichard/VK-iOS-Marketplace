@@ -32,6 +32,15 @@ extension CHMStarsView.Configuration {
             $0.leftPadding = .leftPadding
         }
     }
+
+    static var shimmering: Self {
+        modify(.clear) {
+            $0.isShimmering = true
+            $0.countFillStars = Kind.five.rawValue
+            $0.starWidth = .starWidth
+            $0.padding = .padding
+        }
+    }
 }
 
 // MARK: - Constants

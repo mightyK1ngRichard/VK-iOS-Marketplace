@@ -9,14 +9,16 @@
 import SwiftUI
 import UIKit
 
-extension MainViewModel {
+#if DEBUG
+
+extension MainViewModel: Mockable {
 
     static let mockData = MainViewModel()
 }
 
 // MARK: - Mock Data
 
-extension CHMBigBannerView.Configuration {
+extension CHMBigBannerView.Configuration: Mockable {
 
     static let mockData = CHMBigBannerView.Configuration.basic(
         imageKind: .image(Image("Big Banner")),
@@ -142,3 +144,5 @@ private extension [String] {
 
     static let pickers = ["Size", "Color"]
 }
+
+#endif

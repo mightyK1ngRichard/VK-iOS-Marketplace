@@ -28,6 +28,8 @@ extension CHMStarsView {
         var lineHeigth: CGFloat = .zero
         /// Padding between text and stars
         var leftPadding: CGFloat = .zero
+        /// Shimmering flag
+        var isShimmering: Bool = false
     }
 }
 

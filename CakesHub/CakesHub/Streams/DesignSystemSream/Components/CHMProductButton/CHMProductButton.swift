@@ -24,6 +24,21 @@ struct CHMProductButton: View {
     var didTapButton: CHMVoidBlock?
 
     var body: some View {
+        if configuration.isShimmering {
+            ShimmeringView()
+                .frame(edge: configuration.buttonSize)
+                .clipShape(.circle)
+        } else {
+            MainView
+        }
+    }
+}
+
+// MARK: - Private Subviews
+
+private extension CHMProductButton {
+
+    var MainView: some View {
         ZStack {
             Circle()
                 .fill(configuration.backgroundColor)

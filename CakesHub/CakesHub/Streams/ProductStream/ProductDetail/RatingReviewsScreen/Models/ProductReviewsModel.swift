@@ -11,13 +11,13 @@ import Foundation
 struct ProductReviewsModel {
     static let clear = ProductReviewsModel()
 
-    var countFiveStars  : Int     = 0
-    var countFourStars  : Int     = 0
-    var countThreeStars : Int     = 0
-    var countTwoStars   : Int     = 0
-    var countOneStars   : Int     = 0
-    var countOfComments : Int     = 0
-    var comments: [CommentInfo]   = []
+    var countFiveStars  : Int = 0
+    var countFourStars  : Int = 0
+    var countThreeStars : Int = 0
+    var countTwoStars   : Int = 0
+    var countOneStars   : Int = 0
+    var countOfComments : Int = 0
+    var comments        : [CommentInfo] = []
 
     struct CommentInfo: Identifiable {
         let id             = UUID()
@@ -39,7 +39,8 @@ extension ProductReviewsModel {
     var fourStarsConfiguration: CHMRatingReviewsView.Configuration.RatingData {
         calculateRatingConfiguration(countFourStars)
     }
-    var threeStarsConfiguration: CHMRatingReviewsView.Configuration.RatingData { calculateRatingConfiguration(countThreeStars)
+    var threeStarsConfiguration: CHMRatingReviewsView.Configuration.RatingData { 
+        calculateRatingConfiguration(countThreeStars)
     }
     var twoStarsConfiguration: CHMRatingReviewsView.Configuration.RatingData {
         calculateRatingConfiguration(countTwoStars)

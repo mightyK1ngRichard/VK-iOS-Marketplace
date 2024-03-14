@@ -22,7 +22,7 @@ extension CHMCommentView.Configuration {
     ///   - starsConfiguration: stars view configuration
     /// - Returns: configuration of the view
     static func basic(
-        imageKind: MKRImageView.Configuration.ImageKind,
+        imageKind: ImageKind,
         userName: String,
         date: String,
         description: String,
@@ -42,7 +42,7 @@ extension CHMCommentView.Configuration {
 
 private extension MKRImageView.Configuration {
 
-    static func imageConfiguration(_ kind: MKRImageView.Configuration.ImageKind) -> Self {
+    static func imageConfiguration(_ kind: ImageKind) -> Self {
         .basic(
             kind: kind,
             imageSize: .imageSize,

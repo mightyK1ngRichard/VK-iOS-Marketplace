@@ -15,7 +15,7 @@ extension CHMBigBannerView {
         typealias OwnerViewType = CHMBigBannerView
 
         /// Kind of the image source
-        var imageKind: MKRImageView.Configuration.ImageKind = .clear
+        var imageKind: ImageKind = .clear
         /// Title of the banner
         var bannerTitle: String = .clear
         /// Title of the button

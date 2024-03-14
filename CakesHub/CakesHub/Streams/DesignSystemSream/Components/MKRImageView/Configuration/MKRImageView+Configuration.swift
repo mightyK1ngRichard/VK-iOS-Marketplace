@@ -14,19 +14,17 @@ extension MKRImageView {
         var imageShape: ImageShape = .capsule
         var imageSize: CGSize = .zero
         var contentMode: ContentMode = .fill
+        var isShimmering: Bool = false
     }
 }
 
 // MARK: - Image Kind
 
-extension MKRImageView.Configuration {
-
-    enum ImageKind {
-        case url(URL?)
-        case image(Image?)
-        case uiImage(UIImage?)
-        case clear
-    }
+enum ImageKind {
+    case url(URL?)
+    case image(Image?)
+    case uiImage(UIImage?)
+    case clear
 }
 
 // MARK: - Image Shape

@@ -1,5 +1,5 @@
 //
-//  NewProductDetailModelMockData.swift
+//  NewProductDetailModel+Mock.swift
 //  CakesHub
 //
 //  Created by Dmitriy Permyakov on 04.02.2024.
@@ -8,12 +8,14 @@
 
 import Foundation
 
-extension ProductDetailScreen.ViewModel {
+#if DEBUG
+
+extension ProductDetailScreen.ViewModel: Mockable {
 
     static let mockData = ProductDetailScreen.ViewModel(data: .mockData)
 }
 
-extension ProductModel {
+extension ProductModel: Mockable {
 
     static let mockData = ProductModel(
         productID: 0,
@@ -38,6 +40,21 @@ extension ProductModel {
             .init(configuration: .previewSimilarCard),
         ]
     )
+
+    static func emptyCards(id: Int) -> Self {
+        ProductModel(
+            productID: id,
+            images: [],
+            isFavorite: true,
+            pickers: .pickers,
+            productName: .clear,
+            price: .clear,
+            sellerName: .clear,
+            description: .clear,
+            reviewInfo: .clear,
+            similarProducts: []
+        )
+    }
 }
 
 // MARK: - CHMNewProductCard Configuration
@@ -73,3 +90,5 @@ private extension [String] {
 
     static let pickers = ["Size", "Color"]
 }
+
+#endif

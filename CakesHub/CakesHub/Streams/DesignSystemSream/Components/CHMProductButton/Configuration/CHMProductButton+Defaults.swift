@@ -30,6 +30,13 @@ extension CHMProductButton.Configuration {
             $0.shadowColor = kind.shadowColor
         }
     }
+
+    static var shimmering: Self {
+        modify(.clear) {
+            $0.buttonSize = .buttonSize
+            $0.isShimmering = true
+        }
+    }
 }
 
 // MARK: - Constants

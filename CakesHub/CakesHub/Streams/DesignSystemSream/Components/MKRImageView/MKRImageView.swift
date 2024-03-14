@@ -12,7 +12,11 @@ struct MKRImageView: View {
     let configuration: Configuration
 
     var body: some View {
-        ImageView
+        if configuration.isShimmering {
+            ImageShimmeringView
+        } else {
+            ImageView
+        }
     }
 }
 
@@ -28,12 +32,7 @@ private extension MKRImageView {
                         .imageConfiguaration(for: configuration)
 
                 } placeholder: {
-                    ShimmeringView()
-                        .frame(
-                            width: configuration.imageSize.width,
-                            height: configuration.imageSize.height
-                        )
-                        .clippedShape(configuration.imageShape)
+                    ImageShimmeringView
                 }
             } else {
                 PlaceholderView
@@ -58,6 +57,15 @@ private extension MKRImageView {
         case .clear:
             EmptyView()
         }
+    }
+
+    var ImageShimmeringView: some View {
+        ShimmeringView()
+            .frame(
+                width: configuration.imageSize.width,
+                height: configuration.imageSize.height
+            )
+            .clippedShape(configuration.imageShape)
     }
 
     var PlaceholderView: some View {
