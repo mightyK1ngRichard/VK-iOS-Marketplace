@@ -16,18 +16,3 @@ extension Optional<String> {
         return self.isEmpty ? nil : self
     }
 }
-
-extension URL? {
-
-    var toString: String? {
-        guard let self else { return nil }
-        return "\(self)"
-    }
-}
-
-extension [URL?] {
-
-    var toStringArray: [String] {
-        compactMap { $0.toString }
-    }
-}
