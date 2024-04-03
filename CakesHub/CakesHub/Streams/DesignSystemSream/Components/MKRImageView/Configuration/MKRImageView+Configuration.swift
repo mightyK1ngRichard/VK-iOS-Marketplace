@@ -12,7 +12,6 @@ extension MKRImageView {
     struct Configuration {
         var kind: ImageKind = .clear
         var imageShape: ImageShape = .capsule
-        var imageSize: CGSize = .zero
         var contentMode: ContentMode = .fill
         var isShimmering: Bool = false
     }
@@ -20,34 +19,33 @@ extension MKRImageView {
 
 // MARK: - Image Kind
 
-enum ImageKind {
+enum ImageKind: Hashable {
     case url(URL?)
-    case image(Image?)
     case uiImage(UIImage?)
     case clear
+}
+
+extension ImageKind {
+
+    var isClear: Bool {
+        switch self {
+        case let .url(url):
+            return url.isNil
+        case let .uiImage(uiImage):
+            return uiImage.isNil
+        case .clear:
+            return true
+        }
+    }
 }
 
 // MARK: - Image Shape
 
 extension MKRImageView.Configuration {
 
-    enum ImageShape {
+    enum ImageShape: Hashable {
         case capsule
         case rectangle
         case roundedRectangle(CGFloat)
-    }
-}
-
-extension View {
-
-    func clippedShape(_ shape: MKRImageView.Configuration.ImageShape) -> some View {
-        switch shape {
-        case .capsule:
-            return AnyView(self.clipShape(Circle()))
-        case .rectangle:
-            return AnyView(self.clipShape(Rectangle()))
-        case let .roundedRectangle(cornerRadius):
-            return AnyView(self.clipShape(RoundedRectangle(cornerRadius: cornerRadius)))
-        }
     }
 }

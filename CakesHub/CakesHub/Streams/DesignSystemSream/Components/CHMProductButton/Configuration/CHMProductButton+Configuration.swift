@@ -16,18 +16,16 @@ extension CHMProductButton {
 
         /// Color of the background view
         var backgroundColor: Color = .clear
-        /// Icon image
-        var iconImage: Image = Image("")
         /// Size of the view
         var buttonSize: CGFloat = .zero
         /// Size of the icon
         var iconSize: CGFloat = .zero
-        /// Color of the icon
-        var iconColor: Color = .clear
         /// Color of the shadow
         var shadowColor: Color = .clear
         /// Shimmering flag
         var isShimmering: Bool = false
+        /// Icon kind
+        var kind: Kind = .clear
     }
 }
 
@@ -36,53 +34,67 @@ extension CHMProductButton {
 extension CHMProductButton.Configuration {
     
     /// Kind of the component icon
-    enum Kind {
+    enum Kind: Hashable {
         case favorite(isSelected: Bool = false)
         case basket
-        case custom(Image, Color)
+        case clear
     }
 }
 
 extension CHMProductButton.Configuration.Kind {
 
-    var iconImage: Image {
+    var isSelected: Bool {
         switch self {
-        case .basket: return Image.basketIcon
-        case let .favorite(isSelected): return isSelected ? .favoritePressed : .favoriteBorder
-        case let .custom(image, _): return image
+        case let .favorite(isSelected):
+            return isSelected
+        default:
+            return false
         }
     }
 
-    var iconColor: Color {
+    func iconColor(iconIsSelected: Bool = false) -> Color {
         switch self {
-        case let .favorite(isSelected):
-            return isSelected ? .bgBasketColor : Color(hexLight: 0x9B9B9B, hexDarK: 0xABB4BD)
+        case .favorite:
+            return iconIsSelected ? CHMColor<IconPalette>.iconRed.color : CHMColor<IconPalette>.iconGray.color
         case .basket:
-            return Color(hexLight: 0xF9F9F9, hexDarK: 0xF6F6F6)
-        case let .custom(_, color):
-            return color
+            return CHMColor<IconPalette>.iconBasket.color
+        case .clear:
+            return .clear
+        }
+    }
+
+    func iconImage(isSelected: Bool) -> Image {
+        switch self {
+        case .basket:
+            return CHMImage.basketIcon
+        case .favorite:
+            return isSelected ? CHMImage.favoritePressed : CHMImage.favoriteBorder
+        case .clear:
+            return Image("")
         }
     }
 
     var backgroundColor: Color {
         switch self {
         case .basket: 
-            return Color(hexLight: 0xDB3022, hexDarK: 0xEF3651)
-        case let .favorite(isSelected):
-            return isSelected ? Color(hexLight: 0xFFFFFF, hexDarK: 0x2A2C36) : Color(hexLight: 0xFFFFFF, hexDarK: 0x2A2C36)
-        case .custom:
-            return Color(hexLight: 0xDB3022, hexDarK: 0xEF3651)
+            return CHMColor<BackgroundPalette>.bgBasketColor.color
+        case .favorite:
+            return CHMColor<BackgroundPalette>.bgFavoriteIcon.color
+        case .clear:
+            return .clear
         }
     }
 
     var shadowColor: Color {
         switch self {
-        case .basket: return Color(hexLight: 0xF9F9F9, hexDarK: 0xEF3651, alpha: 0.5)
-        case let .favorite(isSelected): 
+        case .basket: 
+            return CHMColor<ShadowPalette>.basket.color
+        case let .favorite(isSelected):
             return isSelected
-            ? Color(hexLight: 0x9B9B9B, hexDarK: 0xEF3651, alphaLight: 0.5, alphaDark: 0)
-            : Color(hexLight: 0x9B9B9B, hexDarK: 0x2A2C36, alpha: 0.5)
-        case .custom: return Color(hexLight: 0x9B9B9B, hexDarK: 0x2A2C36, alpha: 0.5)
+            ? CHMColor<ShadowPalette>.favoriteSeletected.color
+            : CHMColor<ShadowPalette>.favoriteUnseletected.color
+        case .clear:
+            return .clear
         }
     }
 }

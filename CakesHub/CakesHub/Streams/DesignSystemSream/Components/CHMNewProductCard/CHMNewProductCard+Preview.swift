@@ -13,8 +13,8 @@ struct CHMNewProductCard_Previews: PreviewProvider {
         VStack(spacing: 20) {
             CHMNewProductCard(
                 configuration: .basic(
-                    imageKind: .url(.mockProductCard),
-                    imageSize: CGSize(width: .cardWidth, height: .imageHeigth),
+                    imageKind: .url(.mockProductCard), 
+                    imageHeight: Constants.imageHeigth,
                     productText: .init(
                         seller: "Mango Boy",
                         productName: "T-Shirt Sailing",
@@ -23,15 +23,15 @@ struct CHMNewProductCard_Previews: PreviewProvider {
                     productButtonConfiguration: .basic(kind: .favorite()),
                     starsViewConfiguration: .basic(kind: .four, feedbackCount: 8)
                 )
-            ) {
-                print("Did tap favorite icon")
+            ) { isSelected in
+                print("Did tap favorite icon. isSelected: \(isSelected)")
             }
-            .frame(width: .cardWidth)
+            .frame(width: Constants.cardWidth)
 
             CHMNewProductCard(
                 configuration: .basic(
                     imageKind: .url(.mockProductCard),
-                    imageSize: CGSize(width: .cardWidth, height: .imageHeigth),
+                    imageHeight: Constants.imageHeigth,
                     productText: .init(
                         seller: "Mango Boy",
                         productName: "T-Shirt Sailing",
@@ -41,18 +41,20 @@ struct CHMNewProductCard_Previews: PreviewProvider {
                     productButtonConfiguration: .basic(kind: .basket),
                     starsViewConfiguration: .basic(kind: .four, feedbackCount: 12)
                 )
-            ){
-                print("Did tap basket icon")
+            ) { isSelected in
+                print("Did tap favorite icon. isSelected: \(isSelected)")
             }
-            .frame(width: .cardWidth)
+            .frame(width: Constants.cardWidth)
         }
     }
 }
 
 // MARK: - Constants
 
-private extension CGFloat {
+private extension CHMNewProductCard_Previews {
 
-    static let cardWidth: CGFloat = 148
-    static let imageHeigth: CGFloat = 184
+    enum Constants {
+        static let cardWidth: CGFloat = 148
+        static let imageHeigth: CGFloat = 184
+    }
 }

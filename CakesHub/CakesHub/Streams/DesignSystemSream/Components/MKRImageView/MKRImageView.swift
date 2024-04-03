@@ -11,9 +11,16 @@ struct MKRImageView: View {
 
     let configuration: Configuration
 
+    @State private var uiImage: UIImage?
+    @State private var fetchedError: (any Error)?
+
     var body: some View {
         if configuration.isShimmering {
-            ImageShimmeringView
+            GeometryReader { geo in
+                ShimmeringView()
+                    .frame(width: geo.size.width, height: geo.size.height)
+                    .clippedShape(configuration.imageShape)
+            }
         } else {
             ImageView
         }
@@ -24,57 +31,69 @@ private extension MKRImageView {
 
     @ViewBuilder
     var ImageView: some View {
-        switch configuration.kind {
-        case let .url(url):
-            if let url {
-                AsyncImage(url: url) { image in
-                    image
-                        .imageConfiguaration(for: configuration)
+        GeometryReader { geo in
+            let size = geo.size
+            switch configuration.kind {
+            case let .url(url):
+                CHMAsyncImage(url: url, size: size)
 
-                } placeholder: {
-                    ImageShimmeringView
+            case let .uiImage(uiImage):
+                if let uiImage {
+                    Image(uiImage: uiImage)
+                        .imageConfiguaration(for: configuration, size: size)
+                } else {
+                    PlaceholderView(size: size)
                 }
-            } else {
-                PlaceholderView
-            }
 
-        case let .image(image):
-            if let image {
-                image
-                    .imageConfiguaration(for: configuration)
-            } else {
-                PlaceholderView
+            case .clear:
+                EmptyView()
             }
-
-        case let .uiImage(uiImage):
-            if let uiImage {
-                Image(uiImage: uiImage)
-                    .imageConfiguaration(for: configuration)
-            } else {
-                PlaceholderView
-            }
-
-        case .clear:
-            EmptyView()
         }
     }
 
-    var ImageShimmeringView: some View {
+    @ViewBuilder
+    func CHMAsyncImage(url: URL?, size: CGSize) -> some View {
+        if let url {
+            if fetchedError != nil {
+                PlaceholderView(size: size)
+            } else {
+                LoadingImage(size: size)
+                    .task {
+                        do {
+                            uiImage = try await ImageProvider.shared.fetchThumbnail(url: url)
+                            fetchedError = nil
+                        } catch {
+                            fetchedError = error
+                            Logger.log(kind: .error, message: error)
+                        }
+                    }
+            }
+
+        } else {
+            PlaceholderView(size: size)
+        }
+    }
+
+    @ViewBuilder
+    func LoadingImage(size: CGSize) -> some View {
+        if let uiImage {
+            Image(uiImage: uiImage)
+                .imageConfiguaration(for: configuration, size: size)
+        } else {
+            ImageShimmeringView(size: size)
+        }
+    }
+
+    func ImageShimmeringView(size: CGSize) -> some View {
         ShimmeringView()
-            .frame(
-                width: configuration.imageSize.width,
-                height: configuration.imageSize.height
-            )
+            .frame(width: size.width, height: size.height)
             .clippedShape(configuration.imageShape)
     }
 
-    var PlaceholderView: some View {
+    func PlaceholderView(size: CGSize) -> some View {
         Rectangle()
-            .fill(.pink)
-            .frame(
-                width: configuration.imageSize.width,
-                height: configuration.imageSize.height
-            )
+            .fill(.ultraThinMaterial)
+            .frame(width: size.width, height: size.height)
             .clippedShape(configuration.imageShape)
     }
 }
@@ -83,13 +102,13 @@ private extension MKRImageView {
 
 private extension Image {
 
-    func imageConfiguaration(for configuration: MKRImageView.Configuration) -> some View {
+    func imageConfiguaration(for configuration: MKRImageView.Configuration, size: CGSize) -> some View {
         self
             .resizable()
             .aspectRatio(contentMode: configuration.contentMode)
             .frame(
-                width: configuration.imageSize.width,
-                height: configuration.imageSize.height
+                width: size.width,
+                height: size.height
             )
             .clipped()
             .clippedShape(configuration.imageShape)
@@ -102,8 +121,28 @@ private extension Image {
     MKRImageView(
         configuration: .basic(
             kind: .url(.mockCake1),
-            imageSize: CGSize(width: 200, height: 200),
             imageShape: .roundedRectangle(20)
         )
     )
+}
+
+#Preview {
+    MKRImageView(
+        configuration: .shimmering(imageShape: .roundedRectangle(20))
+    )
+    .frame(width: 200, height: 400)
+}
+
+private extension View {
+
+    func clippedShape(_ shape: MKRImageView.Configuration.ImageShape) -> some View {
+        switch shape {
+        case .capsule:
+            return AnyView(self.clipShape(Circle()))
+        case .rectangle:
+            return AnyView(self.clipShape(Rectangle()))
+        case let .roundedRectangle(cornerRadius):
+            return AnyView(self.clipShape(RoundedRectangle(cornerRadius: cornerRadius)))
+        }
+    }
 }

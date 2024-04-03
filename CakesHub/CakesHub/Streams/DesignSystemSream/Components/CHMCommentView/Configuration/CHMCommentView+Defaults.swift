@@ -45,16 +45,7 @@ private extension MKRImageView.Configuration {
     static func imageConfiguration(_ kind: ImageKind) -> Self {
         .basic(
             kind: kind,
-            imageSize: .imageSize,
             imageShape: .capsule
         )
     }
-}
-
-
-// MARK: - Constants
-
-private extension CGSize {
-
-    static let imageSize = CGSize(edge: 32)
 }

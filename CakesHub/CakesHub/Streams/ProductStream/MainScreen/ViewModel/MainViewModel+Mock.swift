@@ -13,7 +13,7 @@ import UIKit
 
 extension MainViewModel: Mockable {
 
-    static let mockData = MainViewModel()
+    static let mockData = MainViewModel(rootViewModel: .mockData)
 }
 
 // MARK: - Mock Data
@@ -21,70 +21,103 @@ extension MainViewModel: Mockable {
 extension CHMBigBannerView.Configuration: Mockable {
 
     static let mockData = CHMBigBannerView.Configuration.basic(
-        imageKind: .image(Image("Big Banner")),
+        imageKind: .uiImage(UIImage(named: "Big Banner")),
         bannerTitle: "Fashion\nsale",
         buttonTitle: "Check"
     )
 }
 
+// MARK: - SellerInfo
+
+extension ProductModel.SellerInfo {
+
+    static let king = ProductModel.SellerInfo(
+        id: "1",
+        name: "mightyK1ngRichard",
+        surname: "Permyakov",
+        mail: "dimapermyakov55@gmail.com",
+        userImage: .url(.mockKingImage),
+        userHeaderImage: .url(.mockKingHeaderImage)
+    )
+
+    static let poly = ProductModel.SellerInfo(
+        id: "2",
+        name: "Полиночка",
+        surname: "Копылова",
+        mail: "kakashek@gmail.com",
+        userImage: .uiImage(.bestGirl),
+        userHeaderImage: .url(URL(string: "https://pibig.info/uploads/posts/2021-04/1619483895_8-pibig_info-p-anime-personazhi-blondinki-anime-krasivo-10.jpg"))
+    )
+
+    static let milana = ProductModel.SellerInfo(
+        id: "3",
+        name: "Milana",
+        surname: "Shakhbieva",
+        mail: "milana@gmail.com",
+        userImage: .url(URL(string: "https://sun9-48.userapi.com/impg/oni-EvRr6V8PLK_FYzJ7_hlhoj0HhvTTHEWs4g/sVlbTZyHZZ0.jpg?size=1334x1786&quality=95&sign=a17e711df5bcfd6290be44002f9c3e6e&type=album")),
+        userHeaderImage: .uiImage(.cake3)
+    )
+}
+
+// MARK: - ProductModel
+
 extension [ProductModel] {
 
-    static let mockNewsData: [ProductModel] = (0...20).map {
+    static let mockProducts = [
+        [ProductModel].mockAllData,
+        [ProductModel].mockNewsData,
+        [ProductModel].mockSalesData,
+        [ProductModel].similarProducts,
+    ].flatMap { $0 }
+
+    private static let mockNewsData: [ProductModel] = (1...20).map {
         ProductModel(
             productID: $0,
             images: [
-                .init(kind: .image(Image("cake"))),
+                .init(kind: .url(.mockCake1)),
                 .init(kind: .url(.mockCake2)),
                 .init(kind: .url(.mockCake3)),
                 .init(kind: .url(.mockCake4)),
-            ],
+            ].shuffled(),
             badgeText: "NEW",
-            isFavorite: true,
-            pickers: .pickers,
-            productName: .productName,
+            isFavorite: $0.isMultiple(of: 2),
+            isNew: true,
+            pickers: Constants.pickers,
+            seller: .king,
+            productName: "Boston cream pie",
             price: "$\($0).99",
-            sellerName: .sellerName,
-            description: .previewDescription,
+            description: Constants.previewDescription,
             reviewInfo: .mockData,
-            similarProducts: [
-                .init(configuration: .previewSimilarCard),
-                .init(configuration: .previewSimilarCard),
-                .init(configuration: .previewSimilarCard),
-                .init(configuration: .previewSimilarCard),
-                .init(configuration: .previewSimilarCard),
-            ]
+            establishmentDate: "2024-03-\($0)T01:32:01+0000",
+            similarProducts: .similarProducts
         )
     }
 
-    static let mockSalesData: [ProductModel] = (0...20).map {
+    private static let mockSalesData: [ProductModel] = (21...40).map {
         ProductModel(
             productID: $0,
             images: [
-                .init(kind: .image(Image("cake"))),
-                .init(kind: .url(.mockCake2)),
                 .init(kind: .url(.mockCake3)),
+                .init(kind: .url(.mockCake2)),
+                .init(kind: .url(.mockCake1)),
                 .init(kind: .url(.mockCake4)),
-            ],
+            ].shuffled(),
             badgeText: "-\($0)%",
-            isFavorite: true,
-            pickers: .pickers,
-            productName: .productName,
+            isFavorite: $0.isMultiple(of: 2),
+            isNew: false,
+            pickers: Constants.pickers,
+            seller: .poly,
+            productName: Constants.productName,
             price: "$\($0).99",
-            oldPrice: "$\($0 + 10).99",
-            sellerName: .sellerName,
-            description: .previewDescription,
+            oldPrice: "$\($0).99",
+            description: Constants.previewDescription,
             reviewInfo: .mockData,
-            similarProducts: [
-                .init(configuration: .previewSimilarCard),
-                .init(configuration: .previewSimilarCard),
-                .init(configuration: .previewSimilarCard),
-                .init(configuration: .previewSimilarCard),
-                .init(configuration: .previewSimilarCard),
-            ]
+            establishmentDate: "2024-03-\($0)T01:32:01+0000",
+            similarProducts: .similarProducts
         )
     }
 
-    static let mockAllData: [ProductModel] = (0...20).map {
+    private static let mockAllData: [ProductModel] = (41...61).map {
         ProductModel(
             productID: $0,
             images: [
@@ -92,57 +125,56 @@ extension [ProductModel] {
                 .init(kind: .url(.mockCake2)),
                 .init(kind: .url(.mockCake3)),
                 .init(kind: .url(.mockCake4)),
-            ],
-            isFavorite: true,
-            pickers: .pickers,
-            productName: .productName,
+            ].shuffled(),
+            isFavorite: $0.isMultiple(of: 2),
+            isNew: false,
+            pickers: Constants.pickers,
+            seller: .milana,
+            productName: "Battenberg cake",
             price: "$\($0).99",
-            sellerName: .sellerName,
-            description: .previewDescription,
+            description: Constants.previewDescription,
             reviewInfo: .mockData,
-            similarProducts: [
-                .init(configuration: .previewSimilarCard),
-                .init(configuration: .previewSimilarCard),
-                .init(configuration: .previewSimilarCard),
-                .init(configuration: .previewSimilarCard),
-                .init(configuration: .previewSimilarCard),
-            ]
+            establishmentDate: "2024-03-\($0)T01:32:01+0000",
+            similarProducts: .similarProducts
+        )
+    }
+
+    static let similarProducts: [ProductModel] = (62...83).map {
+        ProductModel(
+            productID: $0,
+            images: [
+                .init(kind: .uiImage(CHMImage.mockImageCake)),
+                .init(kind: .url(.mockCake3)),
+                .init(kind: .url(.mockProductCard)),
+                .init(kind: .url(.mockCake4)),
+            ].shuffled(),
+            isFavorite: $0.isMultiple(of: 2),
+            isNew: true,
+            pickers: Constants.pickers,
+            seller: .poly,
+            productName: Constants.productName,
+            price: "$\($0).99",
+            description: Constants.previewDescription,
+            reviewInfo: .mockData,
+            establishmentDate: "2024-03-\($0)T01:32:01+0000",
+            similarProducts: []
         )
     }
 }
 
-// MARK: - CHMNewProductCard Configuration
-
-private extension CHMNewProductCard.Configuration {
-
-    static let previewSimilarCard = CHMNewProductCard.Configuration.basic(
-        imageKind: .url(.mockProductCard),
-        imageSize: CGSize(width: 148, height: 184),
-        productText: .init(
-            seller: "Mango Boy",
-            productName: "T-Shirt Sailing",
-            productPrice: "10$"
-        ),
-        productButtonConfiguration: .basic(kind: .favorite()),
-        starsViewConfiguration: .basic(kind: .four, feedbackCount: 8)
-    )
-}
-
 // MARK: - Constants
 
-private extension String {
+private extension [ProductModel] {
 
-    static let productName = "H&M"
-    static let price = "$19.99"
-    static let sellerName = "Short black dress"
-    static let previewDescription = """
-    Short dress in soft cotton jersey with decorative buttons down the front and a wide, frill-trimmed square neckline with concealed elastication. Elasticated seam under the bust and short puff sleeves with a small frill trim.
-    """
-}
-
-private extension [String] {
-
-    static let pickers = ["Size", "Color"]
+    enum Constants {
+        static let productName = "Очень вкусный торт"
+        static let price = "$19.99"
+        static let sellerName = "Short black dress"
+        static let previewDescription = """
+        Short dress in soft cotton jersey with decorative buttons down the front and a wide, frill-trimmed square neckline with concealed elastication. Elasticated seam under the bust and short puff sleeves with a small frill trim.
+        """
+        static let pickers = ["Size", "Color"]
+    }
 }
 
 #endif

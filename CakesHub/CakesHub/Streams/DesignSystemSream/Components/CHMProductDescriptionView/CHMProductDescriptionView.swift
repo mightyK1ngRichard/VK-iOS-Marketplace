@@ -27,7 +27,6 @@ import SwiftUI
 struct CHMProductDescriptionView: View {
 
     let configuration: Configuration
-    @State private var favoriteIsSelected = false
     @State private var lastSelectedPickerItem: Int?
 
     var body: some View  {
@@ -49,19 +48,6 @@ struct CHMProductDescriptionView: View {
 // MARK: - Subviews
 
 private extension CHMProductDescriptionView {
-
-    @ViewBuilder
-    var FavoriteIcon: some View {
-        CHMProductButton(
-            configuration: modify(.basic(kind: .favorite())) {
-                if favoriteIsSelected {
-                    $0.iconColor = .bgBasketColor
-                }
-            }
-        ) {
-            favoriteIsSelected.toggle()
-        }
-    }
 
     var TextBlock: some View {
         VStack(alignment: .leading) {
@@ -109,19 +95,19 @@ private extension Text {
     var titleFont: some View {
         self
             .font(.system(size: 24, weight: .semibold))
-            .foregroundStyle(Color.textPrimary)
+            .foregroundStyle(CHMColor<TextPalette>.textPrimary.color)
     }
 
     var subtitleFont: some View {
         self
             .font(.system(size: 11, weight: .regular))
-            .foregroundStyle(Color.textSecondary)
+            .foregroundStyle(CHMColor<TextPalette>.textSecondary.color)
     }
 
     var descriptionFont: some View {
         self
             .font(.system(size: 14, weight: .regular))
-            .foregroundStyle(Color.textSecondary)
+            .foregroundStyle(CHMColor<TextPalette>.textSecondary.color)
             .lineSpacing(6)
     }
 }

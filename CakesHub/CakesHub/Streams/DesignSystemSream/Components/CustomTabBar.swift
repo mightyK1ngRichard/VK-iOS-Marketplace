@@ -12,9 +12,11 @@ struct CustomTabBarView: View {
     @State private var allTabs: [AnimatedTab] = TabBarItem.allCases.compactMap {
         AnimatedTab(TabBarItem: $0)
     }
-    
+    @State private var tabBarColor = CHMColor<BackgroundPalette>.bgMainColor.color
+
     var body: some View {
         CustomTabBar
+            .shadow(color: CHMColor<ShadowPalette>.tabBarShadow.color, radius: 10)
     }
 }
 
@@ -37,11 +39,18 @@ private extension CustomTabBarView {
                         .textScale(.secondary)
                 }
                 .frame(maxWidth: .infinity)
-                .foregroundStyle(nav.activeTab == TabBarItem ? Color.iconSelectedColor : Color.iconUnselectedColor)
+                .foregroundStyle(
+                    nav.activeTab == TabBarItem ? Constants.iconSelectedColor : Constants.iconUnselectedColor
+                )
                 .padding(.vertical, 5)
                 .contentShape(.rect)
                 .onTapGesture {
                     withAnimation(.bouncy, completionCriteria: .logicallyComplete) {
+                        if animatedTab.TabBarItem == .notifications {
+                            tabBarColor = Constants.notificationBgColor
+                        } else if tabBarColor != Constants.defaultBgColor {
+                            tabBarColor = Constants.defaultBgColor
+                        }
                         nav.activeTab = TabBarItem
                         animatedTab.isAnimating = true
                     } completion: {
@@ -55,7 +64,7 @@ private extension CustomTabBarView {
                 }
             }
         }
-        .background(Color.bgMainColor)
+        .background(tabBarColor)
     }
 }
 
@@ -85,8 +94,12 @@ private extension View {
     }
 }
 
-private extension Color {
+private extension CustomTabBarView {
 
-    static let iconSelectedColor: Color = .iconRed
-    static let iconUnselectedColor = Color(hexLight: 0x9B9B9B, hexDarK: 0xABB4BD)
+    enum Constants {
+        static let iconSelectedColor: Color = CHMColor<IconPalette>.iconRed.color
+        static let iconUnselectedColor: Color = CHMColor<IconPalette>.iconGray.color
+        static let defaultBgColor: Color = CHMColor<BackgroundPalette>.bgMainColor.color
+        static let notificationBgColor: Color = CHMColor<BackgroundPalette>(hexLight: 0xF9F9F9, hexDark: 0x000000).color
+    }
 }
