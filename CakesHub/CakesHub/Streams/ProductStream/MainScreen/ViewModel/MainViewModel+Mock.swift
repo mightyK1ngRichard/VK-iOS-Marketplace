@@ -32,7 +32,7 @@ extension CHMBigBannerView.Configuration: Mockable {
 extension ProductModel.SellerInfo {
 
     static let king = ProductModel.SellerInfo(
-        id: "1",
+        id: "D4zfn3CLZjb0d2PWVPIFmGhptHr2",
         name: "mightyK1ngRichard",
         surname: "Permyakov",
         mail: "dimapermyakov55@gmail.com",
@@ -41,7 +41,7 @@ extension ProductModel.SellerInfo {
     )
 
     static let poly = ProductModel.SellerInfo(
-        id: "2",
+        id: "6Y1qLJG5NihwnL4qsSJL5397LA93",
         name: "Полиночка",
         surname: "Копылова",
         mail: "kakashek@gmail.com",
@@ -72,7 +72,7 @@ extension [ProductModel] {
 
     private static let mockNewsData: [ProductModel] = (1...20).map {
         ProductModel(
-            productID: $0,
+            id: String($0),
             images: [
                 .init(kind: .url(.mockCake1)),
                 .init(kind: .url(.mockCake2)),
@@ -95,7 +95,7 @@ extension [ProductModel] {
 
     private static let mockSalesData: [ProductModel] = (21...40).map {
         ProductModel(
-            productID: $0,
+            id: String($0),
             images: [
                 .init(kind: .url(.mockCake3)),
                 .init(kind: .url(.mockCake2)),
@@ -109,7 +109,7 @@ extension [ProductModel] {
             seller: .poly,
             productName: Constants.productName,
             price: "$\($0).99",
-            oldPrice: "$\($0).99",
+            discountedPrice: "$\($0 - 10).99",
             description: Constants.previewDescription,
             reviewInfo: .mockData,
             establishmentDate: "2024-03-\($0)T01:32:01+0000",
@@ -119,7 +119,7 @@ extension [ProductModel] {
 
     private static let mockAllData: [ProductModel] = (41...61).map {
         ProductModel(
-            productID: $0,
+            id: String($0),
             images: [
                 .init(kind: .url(.mockProductCard)),
                 .init(kind: .url(.mockCake2)),
@@ -141,13 +141,14 @@ extension [ProductModel] {
 
     static let similarProducts: [ProductModel] = (62...83).map {
         ProductModel(
-            productID: $0,
+            id: String($0),
             images: [
                 .init(kind: .uiImage(CHMImage.mockImageCake)),
                 .init(kind: .url(.mockCake3)),
                 .init(kind: .url(.mockProductCard)),
                 .init(kind: .url(.mockCake4)),
             ].shuffled(),
+            badgeText: "NEW",
             isFavorite: $0.isMultiple(of: 2),
             isNew: true,
             pickers: Constants.pickers,

@@ -87,7 +87,8 @@ extension ProductDetailScreen {
         CHMProductDescriptionView(
             configuration: .basic(
                 title: viewModel.currentProduct.productName,
-                price: viewModel.currentProduct.price,
+                price: viewModel.currentProduct.price, 
+                discountedPrice: viewModel.currentProduct.discountedPrice,
                 subtitle: viewModel.currentProduct.seller.name,
                 description: viewModel.currentProduct.description,
                 starsConfiguration: .basic(
@@ -119,11 +120,13 @@ extension ProductDetailScreen {
 
             Divider()
 
-            Button(action: openSellerInfo, label: {
-                MoreInfoCell(text: ProductDetailCells.sellerInfo.rawValue)
-                    .padding(.horizontal)
-            })
-            Divider()
+            if rootViewModel.currentUser.id != viewModel.currentProduct.seller.id {
+                Button(action: openSellerInfo, label: {
+                    MoreInfoCell(text: ProductDetailCells.sellerInfo.rawValue)
+                        .padding(.horizontal)
+                })
+                Divider()
+            }
         }
     }
 
@@ -296,4 +299,11 @@ private extension ProductDetailScreen {
 #Preview {
     ProductDetailScreen(viewModel: .mockData)
         .environmentObject(Navigation())
+        .environmentObject(RootViewModel(currentUser: .king))
+}
+
+#Preview {
+    ProductDetailScreen(viewModel: .mockData)
+        .environmentObject(Navigation())
+        .environmentObject(RootViewModel(currentUser: .poly))
 }

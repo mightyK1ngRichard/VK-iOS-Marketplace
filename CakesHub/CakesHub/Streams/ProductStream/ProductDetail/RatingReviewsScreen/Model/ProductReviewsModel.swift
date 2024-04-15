@@ -20,7 +20,7 @@ struct ProductReviewsModel {
     var comments        : [CommentInfo] = []
 
     struct CommentInfo: Identifiable {
-        let id             = UUID()
+        let id             : String = UUID().uuidString
         var userName       : String = .clear
         var date           : String = .clear
         var description    : String = .clear
@@ -52,8 +52,7 @@ extension ProductReviewsModel {
         countFiveStars + countFourStars + countThreeStars + countTwoStars + countOneStars
     }
     var averageRatingString: String {
-        let count: CGFloat = CGFloat(feedbackCounter) / 5
-        return "\(count.rounded(toPlaces: 1))"
+        return "\(averageRating.rounded(toPlaces: 1))"
     }
     var averageRating: CGFloat {
         CGFloat(feedbackCounter) / 5

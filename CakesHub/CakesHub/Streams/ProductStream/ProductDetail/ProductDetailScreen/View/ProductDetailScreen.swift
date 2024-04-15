@@ -15,7 +15,7 @@ struct ProductDetailScreen: View {
     typealias ViewModel = ProductDetailViewModel
     @StateObject var viewModel: ViewModel
     @EnvironmentObject var nav: Navigation
-    @EnvironmentObject private var rootViewModel: RootViewModel
+    @EnvironmentObject var rootViewModel: RootViewModel
 
     // MARK: Properties
 
@@ -58,7 +58,7 @@ extension ProductDetailScreen {
         }
     }
 
-    func didTapLikeSimilarProductCard(id: UUID, isSelected: Bool) {
+    func didTapLikeSimilarProductCard(id: String, isSelected: Bool) {
         print("id: \(id) | isSelected: \(isSelected)")
     }
 
@@ -92,4 +92,5 @@ extension ProductDetailScreen {
 #Preview {
     ProductDetailScreen(viewModel: .mockData)
         .environmentObject(Navigation())
+        .environmentObject(RootViewModel())
 }

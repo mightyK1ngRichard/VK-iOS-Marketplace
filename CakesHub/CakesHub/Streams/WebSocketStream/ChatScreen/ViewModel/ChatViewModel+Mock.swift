@@ -9,13 +9,12 @@
 import Foundation
 
 #if DEBUG
-
 extension ChatViewModel: Mockable {
 
     static let mockData = ChatViewModel(
         messages: .mockData,
-        user: .mockData
+        seller: .mockData,
+        user: .king
     )
 }
-
 #endif

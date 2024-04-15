@@ -11,6 +11,8 @@ struct Message: Codable, Identifiable {
     var id: UUID
     let kind: MessageKind
     let userName: String
+    let userID: String
+    let receiverID: String
     let dispatchDate: Date
     let message: String
     var state: State
@@ -51,14 +53,5 @@ private extension Data? {
     var mapper: ImageKind {
         guard let data = self else { return .clear }
         return .uiImage(UIImage(data: data))
-    }
-}
-
-private extension Date {
-
-    func formattedString(format: String) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = format
-        return dateFormatter.string(from: self)
     }
 }
