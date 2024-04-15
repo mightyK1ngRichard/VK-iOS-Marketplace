@@ -6,33 +6,55 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct RootView: View {
 
-    @StateObject var nav: Navigation
-    @StateObject var viewModel: RootViewModel
+    @StateObject private var nav = Navigation()
+    @StateObject var viewModel = RootViewModel()
     @State private var size: CGSize = .zero
-
-    init(nav: Navigation = Navigation(), viewModel: RootViewModel = RootViewModel()) {
-        self._nav = StateObject(wrappedValue: nav)
-        self._viewModel = StateObject(wrappedValue: viewModel)
-    }
 
     var body: some View {
         NavigationStack(path: $nav.path) {
-            MainViewBlock
+            AuthOrMainView
         }
         .tint(CHMColor<IconPalette>.navigationBackButton.color)
         .environmentObject(nav)
         .environmentObject(viewModel)
         .viewSize(size: $size)
-        .onAppear(perform: viewModel.fetchData)
+        .onAppear(perform: onAppear)
+    }
+}
+
+// MARK: - Network
+
+private extension RootView {
+
+    func onAppear() {
+        Task {
+            do {
+                try await viewModel.fetchData()
+            } catch {
+                viewModel.fetchDataFromMemory()
+                Logger.log(kind: .error, message: error)
+            }
+        }
     }
 }
 
 // MARK: - UI Subviews
 
 private extension RootView {
+
+    @ViewBuilder
+    var AuthOrMainView: some View {
+        if viewModel.isAuth {
+            MainViewBlock
+        } else {
+            // FIXME: Не забыть убрать моки
+            AuthView(viewModel: .mockData)
+        }
+    }
 
     var MainViewBlock: some View {
         ZStack(alignment: .bottom) {
@@ -76,4 +98,5 @@ private extension RootView {
 #Preview {
     RootView()
         .environmentObject(Navigation())
+        .modelContainer(Preview(SDUserModel.self).container)
 }

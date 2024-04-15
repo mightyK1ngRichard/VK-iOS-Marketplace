@@ -14,15 +14,15 @@ protocol MainViewModelProtocol: AnyObject {
     func groupDataBySection()
     func startViewDidLoad()
     func pullToRefresh()
-    func didTapFavoriteButton(id: UUID, section: MainViewModel.Section, isSelected: Bool)
+    func didTapFavoriteButton(id: String, section: MainViewModel.Section, isSelected: Bool)
 }
 
 // MARK: - MainViewModel
 
 final class MainViewModel: ObservableObject, ViewModelProtocol {
 
-    @Published var sections: [Section] = []
-    var rootViewModel: RootViewModel
+    @Published private(set) var sections: [Section] = []
+    private(set) var rootViewModel: RootViewModel
     private(set) var isShimmering: Bool = false
 
     init(rootViewModel: RootViewModel) {
@@ -98,7 +98,7 @@ extension MainViewModel: MainViewModelProtocol {
     func startViewDidLoad() {
         guard sections.isEmpty else { return }
         isShimmering = true
-        let shimmeringCards: [ProductModel] = (0...3).map { .emptyCards(id: $0) }
+        let shimmeringCards: [ProductModel] = (0...3).map { .emptyCards(id: String($0)) }
         let salesSection = Section.sales(shimmeringCards)
         let newsSection = Section.news(shimmeringCards)
         let allSection = Section.all(shimmeringCards)
@@ -112,7 +112,7 @@ extension MainViewModel: MainViewModelProtocol {
         var sales: [ProductModel] = []
         var all: [ProductModel] = []
         rootViewModel.products.forEach { product in
-            if !product.oldPrice.isNil {
+            if !product.discountedPrice.isNil {
                 sales.append(product)
                 return
             } else if product.isNew {
@@ -129,31 +129,5 @@ extension MainViewModel: MainViewModelProtocol {
 
     func pullToRefresh() {}
 
-    func didTapFavoriteButton(id: UUID, section: Section, isSelected: Bool) {
-        #if DEBUG
-        // TODO: Заменить на запросы в сеть. Это для превью
-        switch section {
-        case .news:
-            guard case var .news(cakes) = sections[section.id],
-                  let index = cakes.firstIndex(where: { $0.id == id })
-            else { return }
-            cakes[index].isFavorite = isSelected
-            sections[section.id] = .news(cakes)
-
-        case .sales:
-            guard case var .sales(cakes) = sections[section.id],
-                  let index = cakes.firstIndex(where: { $0.id == id })
-            else { return }
-            cakes[index].isFavorite = isSelected
-            sections[section.id] = .sales(cakes)
-
-        case .all:
-            guard case var .all(cakes) = sections[section.id],
-                  let index = cakes.firstIndex(where: { $0.id == id })
-            else { return }
-            cakes[index].isFavorite = isSelected
-            sections[section.id] = .all(cakes)
-        }
-        #endif
-    }
+    func didTapFavoriteButton(id: String, section: Section, isSelected: Bool) {}
 }
