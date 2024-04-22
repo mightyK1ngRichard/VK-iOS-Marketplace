@@ -11,10 +11,19 @@ import SwiftPrettyPrint
 final class Logger {
     private init() {}
 
-    static func log(kind: Kind = .info, message: Any, function: String = #function) {
-        print("[ \(kind.rawValue.uppercased()) ]: [ \(Date()) ]: [ \(function) ]")
+    static func log(kind: Kind = .info, message: Any, fileName: String = #file, function: String = #function, line: Int = #line) {
+        #if DEBUG
+        let swiftFileName = fileName.split(separator: "/").last ?? "file not found"
+        Swift.print("[ \(kind.rawValue.uppercased()) ]: [ \(Date()) ]: [ \(swiftFileName) ] [ \(function) ]: [ #\(line) ]")
         Pretty.prettyPrint(message)
-        print()
+        Swift.print()
+        #endif
+    }
+
+    static func `print`(_ message: Any, line: Int = #line) {
+        #if DEBUG
+        Swift.print("[DEBUG]: #\(line):", message)
+        #endif
     }
 
     enum Kind: String, Hashable {

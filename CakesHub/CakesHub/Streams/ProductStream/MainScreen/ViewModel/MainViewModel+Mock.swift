@@ -13,7 +13,7 @@ import UIKit
 
 extension MainViewModel: Mockable {
 
-    static let mockData = MainViewModel(rootViewModel: .mockData)
+    static let mockData = MainViewModel()
 }
 
 // MARK: - Mock Data
@@ -32,10 +32,10 @@ extension CHMBigBannerView.Configuration: Mockable {
 extension ProductModel.SellerInfo {
 
     static let king = ProductModel.SellerInfo(
-        id: "D4zfn3CLZjb0d2PWVPIFmGhptHr2",
-        name: "mightyK1ngRichard",
+        id: FBUserModel.mockData.uid,
+        name: FBUserModel.mockData.nickname,
         surname: "Permyakov",
-        mail: "dimapermyakov55@gmail.com",
+        mail: FBUserModel.mockData.email,
         userImage: .url(.mockKingImage),
         userHeaderImage: .url(.mockKingHeaderImage)
     )
@@ -63,14 +63,7 @@ extension ProductModel.SellerInfo {
 
 extension [ProductModel] {
 
-    static let mockProducts = [
-        [ProductModel].mockAllData,
-        [ProductModel].mockNewsData,
-        [ProductModel].mockSalesData,
-        [ProductModel].similarProducts,
-    ].flatMap { $0 }
-
-    private static let mockNewsData: [ProductModel] = (1...20).map {
+    static let mockNewsData: [ProductModel] = (1...20).map {
         ProductModel(
             id: String($0),
             images: [
@@ -93,7 +86,7 @@ extension [ProductModel] {
         )
     }
 
-    private static let mockSalesData: [ProductModel] = (21...40).map {
+    static let mockSalesData: [ProductModel] = (21...40).map {
         ProductModel(
             id: String($0),
             images: [
@@ -117,7 +110,7 @@ extension [ProductModel] {
         )
     }
 
-    private static let mockAllData: [ProductModel] = (41...61).map {
+    static let mockAllData: [ProductModel] = (41...61).map {
         ProductModel(
             id: String($0),
             images: [

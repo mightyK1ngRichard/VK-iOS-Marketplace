@@ -17,7 +17,7 @@ extension MainView {
                 BannerSectionView
 
                 VStack(spacing: 0) {
-                    ForEach(viewModel.sections, id: \.self.id) { section in
+                    ForEach(rootViewModel.productData.sections, id: \.self.id) { section in
                         SectionsBlock(section: section)
                     }
                 }
@@ -61,7 +61,7 @@ extension MainView {
     }
 
     @ViewBuilder
-    func SectionsBlock(section: MainViewModel.Section) -> some View {
+    func SectionsBlock(section: RootViewModel.Section) -> some View {
         switch section {
         case .sales(let sales):
             SectionView(
@@ -187,7 +187,7 @@ extension MainView {
         badgeConfiguration: CHMBadgeView.Configuration,
         complection: @escaping (String, Bool) -> Void
     ) -> some View {
-        if viewModel.isShimmering {
+        if rootViewModel.isShimmering {
             CHMNewProductCard(
                 configuration: .shimmering(imageHeight: size.height * Constants.fractionHeight)
             )
@@ -229,6 +229,7 @@ extension MainView {
 #Preview {
     MainView(viewModel: .mockData, size: CGSize(width: 400, height: 800))
         .environmentObject(Navigation())
+        .environmentObject(RootViewModel.mockData)
 }
 
 // MARK: - Constants

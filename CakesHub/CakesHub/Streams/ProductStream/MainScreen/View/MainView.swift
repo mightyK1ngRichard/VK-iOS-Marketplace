@@ -12,6 +12,7 @@ struct MainView: View, ViewModelable {
     typealias ViewModel = MainViewModel
 
     @EnvironmentObject private var nav: Navigation
+    @EnvironmentObject var rootViewModel: RootViewModel
     @StateObject var viewModel: ViewModel
     var size: CGSize
 
@@ -29,8 +30,6 @@ struct MainView: View, ViewModelable {
 private extension MainView {
 
     func onAppear() {
-        viewModel.startViewDidLoad()
-        viewModel.groupDataBySection()
     }
 }
 
@@ -39,22 +38,16 @@ private extension MainView {
 extension MainView {
     
     /// Нажатие на кнопку лайка карточки
-    /// - Parameters:
-    ///   - id: id продукта
-    ///   - isSelected: флаг лайка
-    func didTapFavoriteButton(id: String, section: ViewModel.Section, isSelected: Bool) {
-        Logger.log(message: "id: \(id) | section: \(section.title) | isSelected: \(isSelected)")
+    func didTapFavoriteButton(id: String, section: RootViewModel.Section, isSelected: Bool) {
         viewModel.didTapFavoriteButton(id: id, section: section, isSelected: isSelected)
     }
 
     /// Нажатие на карточку продукта
-    /// - Parameter card: модель торта
     func didTapProductCard(card: ProductModel) {
         nav.addScreen(screen: card)
     }
     
     /// Нажатие на секцию
-    /// - Parameter products: товары секции
     func didTapSection(products: [ProductModel]) {
         nav.addScreen(screen: products)
     }
@@ -80,4 +73,6 @@ private extension MainView {
 #Preview {
     MainView(viewModel: .mockData, size: CGSize(width: 400, height: 800))
         .environmentObject(Navigation())
+        .environmentObject(RootViewModel.mockData)
+        .modelContainer(Preview(SDUserModel.self).container)
 }

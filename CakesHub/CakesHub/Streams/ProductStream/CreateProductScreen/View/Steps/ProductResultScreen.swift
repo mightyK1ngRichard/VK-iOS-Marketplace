@@ -20,10 +20,16 @@ struct ProductResultScreen: View {
                 configuration: .basic(
                     title: viewModel.inputProductData.productName,
                     price: "$\(viewModel.inputProductData.productPrice)",
-                    discountedPrice: viewModel.inputProductData.productDiscountedPrice.isEmpty ? nil : "$\(viewModel.inputProductData.productDiscountedPrice)",
-                    subtitle: rootViewModel.currentUser.name,
+                    discountedPrice: {
+                        if let discountedPrice = viewModel.inputProductData.productDiscountedPrice,
+                           !discountedPrice.isEmpty {
+                            return "$\(discountedPrice)"
+                        }
+                        return nil
+                    }(),
+                    subtitle: rootViewModel.currentUser.nickname,
                     description: viewModel.inputProductData.productDescription,
-                    starsConfiguration: .basic(kind: .zero, feedbackCount: 0)
+                    starsConfiguration: .clear
                 )
             )
             .padding(.bottom, 150)
@@ -44,14 +50,13 @@ private extension ProductResultScreen {
         VStack {
             ScrollView(.horizontal) {
                 HStack(spacing: 4) {
-                    ForEach(viewModel.inputProductData.productImages, id: \.self) { data in
-                        if let uiImage = UIImage(data: data) {
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 275, height: 413)
-                                .clipped()
-                        }
+                    ForEach(Array(viewModel.inputProductData.productImages), id: \.self) { uiImage in
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 275, height: 413)
+                            .clipped()
+
                     }
                 }
             }
@@ -75,7 +80,7 @@ private extension ProductResultScreen {
 // MARK: - Preview
 
 #Preview {
-    return ProductResultScreen()
-        .environmentObject(CreateProductViewModel())
-        .environmentObject(RootViewModel(currentUser: .king))
+    ProductResultScreen()
+        .environmentObject(CreateProductViewModel.mockData)
+        .environmentObject(RootViewModel.mockData)
 }

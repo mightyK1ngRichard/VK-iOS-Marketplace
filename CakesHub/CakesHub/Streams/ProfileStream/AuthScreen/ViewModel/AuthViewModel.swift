@@ -13,12 +13,12 @@ import Observation
 // MARK: - AuthViewModelProtocol
 
 protocol AuthViewModelProtocol: AnyObject {
-    // Actions
+    // MARK: Actions
     func didTapRegisterButton() async throws
     func didTapSignInButton() async throws
-    // Memory
+    // MARK: Memory
     func saveUserInMemory(user: SDUserModel)
-    // Reducers
+    // MARK: Reducers
     func setContext(context: ModelContext)
     func setRootViewModel(viewModel: RootViewModel)
 }
@@ -27,23 +27,20 @@ protocol AuthViewModelProtocol: AnyObject {
 
 @Observable
 final class AuthViewModel: ViewModelProtocol, AuthViewModelProtocol {
-    var inputData: UserInputData
+    var inputData: VMAuthInputData
     private(set) var rootViewModel: RootViewModel? = nil
     @ObservationIgnored
     private(set) var context: ModelContext?
     @ObservationIgnored
-    private let authService: AuthServiceProtocol
-    @ObservationIgnored
-    private let userService: UserServiceProtocol
+    private let services: VMAuthServices
 
     init(
-        inputData: UserInputData = .clear,
+        inputData: VMAuthInputData = .clear,
         authService: AuthServiceProtocol = AuthService.shared,
         userService: UserServiceProtocol = UserService.shared
     ) {
         self.inputData = inputData
-        self.authService = authService
-        self.userService = userService
+        self.services = VMAuthServices(authService: authService, userService: userService)
     }
 }
 
@@ -55,43 +52,32 @@ extension AuthViewModel {
     @MainActor
     func didTapRegisterButton() async throws {
         // Регестрируем пользователя
-        let uid = try await authService.registeUser(with: inputData.mapper)
+        let uid = try await services.authService.registeUser(with: inputData.mapper)
 
         // Сохраняем данные о пользователе на устройстве
         let user = SDUserModel(uid: uid, nickName: inputData.nickName, email: inputData.email)
         saveUserInMemory(user: user)
 
         // Обновляем рутового пользователя. Должно выполняться на главном потоке
-        rootViewModel?.currentUser = .init(
-            id: uid,
-            name: inputData.nickName,
-            mail: inputData.email
-        )
+        rootViewModel?.setCurrentUser(for: user.mapperInFBUserModel)
     }
 
     /// Нажали кнопку  `войти`
     @MainActor
     func didTapSignInButton() async throws {
         // Проверяем, зарегестрирован ли пользователь
-        let userUID = try await authService.loginUser(
+        let userUID = try await services.authService.loginUser(
             with: LoginUserRequest(email: inputData.email, password: inputData.password)
         )
 
         // Получаем все данные пользователя
-        let userInfo = try await userService.getUserInfo(uid: userUID)
-
-        // Сохраняем новые данные на устройстве
-        let user = SDUserModel(
-            uid: userInfo.uid,
-            nickName: userInfo.nickname,
-            email: userInfo.email,
-            userImageURL: userInfo.avatarImage,
-            userHeaderImageURL: userInfo.headerImage
-        )
-        saveUserInMemory(user: user)
+        let userInfo = try await services.userService.getUserInfo(uid: userUID)
 
         // Обновляем рутового пользователя. Должно выполняться на главном потоке
-        rootViewModel?.currentUser = userInfo.mapper
+        rootViewModel?.setCurrentUser(for: userInfo)
+
+        // Сохраняем новые данные на устройстве
+        saveUserInMemory(user: SDUserModel(fbModel: userInfo))
     }
 }
 
@@ -104,17 +90,8 @@ extension AuthViewModel {
         let fetchDescriptor = FetchDescriptor<SDUserModel>()
 
         do {
-            guard let userInfo = try context?.fetch(fetchDescriptor).first else {
-                return
-            }
-
-            rootViewModel?.currentUser = .init(
-                id: userInfo.uid,
-                name: userInfo.nickName,
-                mail: userInfo.email,
-                userImage: .url(URL(string: userInfo.userImageURL ?? .clear)),
-                userHeaderImage: .url(URL(string: userInfo.userHeaderImageURL ?? .clear))
-            )
+            guard let userInfo = try context?.fetch(fetchDescriptor).first else { return }
+            rootViewModel?.setCurrentUser(for: userInfo.mapperInFBUserModel)
         } catch {
             Logger.log(kind: .error, message: error)
         }

@@ -14,8 +14,8 @@ import SwiftUI
 // MARK: - CakeServiceProtocol
 
 protocol CakeServiceProtocol {
-    func getCakesList() async throws -> [ProductRequest]
-    func createCake(cake: ProductRequest, completion: @escaping (Error?) -> Void)
+    func getCakesList() async throws -> [FBProductModel]
+    func createCake(cake: FBProductModel, completion: @escaping (Error?) -> Void)
 }
 
 // MARK: - CakeService
@@ -33,16 +33,13 @@ final class CakeService {
 extension CakeService: CakeServiceProtocol {
 
     /// Getting a list of cakes
-    func getCakesList() async throws -> [ProductRequest] {
+    func getCakesList() async throws -> [FBProductModel] {
         let snapshot = try await Firestore.firestore().collection(FirestoreCollections.products.rawValue).getDocuments()
-        return snapshot.documents.compactMap { ProductRequest(dictionary: $0.data()) }
+        return snapshot.documents.compactMap { FBProductModel(dictionary: $0.data()) }
     }
 
     /// Cake creation
-    /// - Parameters:
-    ///   - cake: info of the new cake
-    ///   - completion: creation result
-    func createCake(cake: ProductRequest, completion: @escaping (Error?) -> Void) {
+    func createCake(cake: FBProductModel, completion: @escaping (Error?) -> Void) {
         let dispatchGroup = DispatchGroup()
 
         var images: [String] = []
@@ -104,32 +101,31 @@ extension CakeService: CakeServiceProtocol {
             completion(.failure(.badParameters))
             return
         }
+
+        let mainQueueCompletion: CHMResultBlock<String, APIError> = { result in
+            DispatchQueue.main.async {
+                completion(result)
+            }
+        }
         storageRef.putData(imageData, metadata: nil) { metadata, error in
             if let error {
-                DispatchQueue.main.async {
-                    completion(.failure(.error(error)))
-                }
+                mainQueueCompletion(.failure(.error(error)))
                 return
             }
             guard !metadata.isNil else {
-                DispatchQueue.main.async {
-                    completion(.failure(.dataIsNil))
-                }
+                mainQueueCompletion(.failure(.dataIsNil))
                 return
             }
 
             storageRef.downloadURL { url, error in
                 if let error {
-                    DispatchQueue.main.async {
-                        completion(.failure(.error(error)))
-                    }
+                    mainQueueCompletion(.failure(.error(error)))
                     return
                 }
 
                 if let imageUrl = url?.absoluteString {
-                    DispatchQueue.main.async {
-                        completion(.success(imageUrl))
-                    }
+                    mainQueueCompletion(.success(imageUrl))
+                    return
                 }
             }
         }

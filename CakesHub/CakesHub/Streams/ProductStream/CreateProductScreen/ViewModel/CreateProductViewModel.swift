@@ -23,20 +23,30 @@ final class CreateProductViewModel: ObservableObject, ViewModelProtocol {
 
     private(set) var rootViewModel: RootViewModel
     private(set) var profileViewModel: ProfileViewModel
-    @Published var inputProductData: InputProductModel
+    private let services: VMServices
+    @Published var inputProductData: VMInputProductModel
     let totalCount = 3
 
-    init(rootViewModel: RootViewModel = RootViewModel(), profileViewModel: ProfileViewModel = ProfileViewModel()) {
+    init(
+        rootViewModel: RootViewModel = RootViewModel(),
+        profileViewModel: ProfileViewModel = ProfileViewModel(),
+        services: VMServices = VMServices(),
+        inputProductData: VMInputProductModel = .clear
+    ) {
         self.rootViewModel = rootViewModel
         self.profileViewModel = profileViewModel
+        self.services = services
 
         let productName = UserDefaults.standard.value(forKey: Keys.productName) as? String ?? .clear
         let productDescription = UserDefaults.standard.value(forKey: Keys.productDescription) as? String ?? .clear
         let productPrice = UserDefaults.standard.value(forKey: Keys.productPrice) as? String ?? .clear
-        let productDiscountedPrice = UserDefaults.standard.value(forKey: Keys.productDiscountedPrice) as? String ?? .clear
-        let productImages = UserDefaults.standard.array(forKey: Keys.productImages) as? [Data] ?? []
+        let productDiscountedPrice = UserDefaults.standard.value(forKey: Keys.productDiscountedPrice) as? String
+        let productImagesPaths = UserDefaults.standard.array(forKey: Keys.productImages) as? [String] ?? []
+        let productImages: Set<UIImage> = Set(productImagesPaths.compactMap {
+            services.fileManager.getImage(key: $0)
+        })
 
-        self.inputProductData = InputProductModel(
+        self.inputProductData = VMInputProductModel(
             productName: productName,
             productDescription: productDescription,
             productPrice: productPrice,
@@ -65,21 +75,29 @@ extension CreateProductViewModel {
 extension CreateProductViewModel: CreateProductViewModelProtocol {
 
     func saveSelectedImages(imagesData: [Data]) {
-        inputProductData.productImages = imagesData
-        UserDefaults.standard.set(imagesData, forKey: Keys.productImages)
+        var images: Set<UIImage> = []
+        let imagePaths: [String] = imagesData.enumerated().compactMap { index, data in
+            guard let uiImage = UIImage(data: data) else { return nil }
+            images.insert(uiImage)
+            let imagePathName: String = "created-image-\(index)"
+            self.services.fileManager.saveImage(uiImage: uiImage, for: imagePathName)
+            return imagePathName
+        }
+        self.inputProductData.productImages = images
+        UserDefaults.standard.set(imagePaths, forKey: Keys.productImages)
     }
     
     /// Нажали кнопку `создать`
     func didTapCreateProductButton() {
         // Создаём локальную карточку продукта
-        let newProduct = configurationProductModel()
-        rootViewModel.products.append(newProduct)
-        rootViewModel.currentUserProducts.append(newProduct)
-        profileViewModel.updateUserProducts(products: rootViewModel.currentUserProducts)
+        let newProduct = configurationProductModel
+        rootViewModel.addNewProduct(product: newProduct)
+        profileViewModel.updateUserProducts(products: rootViewModel.productData.currentUserProducts.mapperToProductModel)
 
         // Отправляем запрос в сеть
-        // TODO: Добавить запрос ...
-
+        services.cakeService.createCake(cake: newProduct) { error in
+            if let error { Logger.log(kind: .error, message: error) }
+        }
 
         // Сброс введённых данных
         resetUserDefaults()
@@ -97,35 +115,21 @@ extension CreateProductViewModel: CreateProductViewModelProtocol {
 
 private extension CreateProductViewModel {
 
-    func configurationProductModel() -> ProductModel {
-        let images: [ProductModel.ProductImage] = inputProductData.productImages.map { .init(kind: .uiImage(UIImage(data: $0))) }
-        let badgeText: String
-        if let salePrice = Int(inputProductData.productDiscountedPrice), let oldPrice = Int(inputProductData.productPrice) {
-            let floatOldePrice = CGFloat(oldPrice)
-            let floatSalePrice = CGFloat(salePrice)
-            let sale = (floatOldePrice - floatSalePrice) / floatOldePrice * 100
-            badgeText = "-\(Int(sale.rounded(toPlaces: 0)))%"
-        } else {
-            badgeText = "NEW"
-        }
-
-        let newProduct = ProductModel(
-            id: UUID().uuidString,
-            images: images,
-            badgeText: badgeText,
-            isFavorite: false,
-            isNew: true,
-            pickers: [], // TODO: iOS-13: Добавить экран с выбором пикеров
-            seller: rootViewModel.currentUser,
+    var configurationProductModel: FBProductModel {
+        FBProductModel(
+            documentID: UUID().uuidString,
+            images: .images(inputProductData.productImages.map { $0 }),
+            pickers: [], // TODO: iOS-18: Добавить экран с выбором пикеров
             productName: inputProductData.productName,
-            price: "$\(inputProductData.productPrice)",
-            discountedPrice: inputProductData.productDiscountedPrice.isEmpty ? nil : "$\(inputProductData.productDiscountedPrice)",
+            price: inputProductData.productPrice,
+            discountedPrice: inputProductData.productDiscountedPrice,
+            weight: nil,
+            seller: rootViewModel.currentUser,
             description: inputProductData.productDescription,
+            similarProducts: [],
             establishmentDate: Date.now.formattedString(format: "yyyy-MM-dd HH:mm:ss"),
-            similarProducts: []
+            reviewInfo: .clear
         )
-
-        return newProduct
     }
 
     func resetUserDefaults() {
@@ -134,6 +138,8 @@ private extension CreateProductViewModel {
         UserDefaults.standard.removeObject(forKey: Keys.productDescription)
         UserDefaults.standard.removeObject(forKey: Keys.productPrice)
         UserDefaults.standard.removeObject(forKey: Keys.productDiscountedPrice)
+        let productImagesPaths = UserDefaults.standard.array(forKey: Keys.productImages) as? [String] ?? []
+        productImagesPaths.forEach { services.fileManager.deleteImage(by: $0) }
         UserDefaults.standard.removeObject(forKey: Keys.productImages)
     }
 
