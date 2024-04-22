@@ -3,6 +3,7 @@
 //  CakesHub
 //
 //  Created by Dmitriy Permyakov on 15.02.2024.
+//  Copyright 2024 © VK Team CakesHub. All rights reserved.
 //
 
 import SwiftUI
@@ -25,6 +26,9 @@ struct CakesHubApp: App {
         WindowGroup {
             RootView()
         }
-        .modelContainer(for: SDUserModel.self)
+        .modelContainer(for: [
+            SDUserModel.self,
+            SDProductModel.self
+        ])
     }
 }

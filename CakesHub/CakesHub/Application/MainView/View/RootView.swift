@@ -3,6 +3,7 @@
 //  CakesHub
 //
 //  Created by Dmitriy Permyakov on 08.03.2024.
+//  Copyright 2024 © VK Team CakesHub. All rights reserved.
 //
 
 import SwiftUI
@@ -12,6 +13,7 @@ struct RootView: View {
 
     @StateObject private var nav = Navigation()
     @StateObject var viewModel = RootViewModel()
+    @Environment(\.modelContext) private var context
     @State private var size: CGSize = .zero
 
     var body: some View {
@@ -31,11 +33,12 @@ struct RootView: View {
 private extension RootView {
 
     func onAppear() {
+        viewModel.setContext(context: context)
         Task {
             do {
                 try await viewModel.fetchData()
             } catch {
-                viewModel.fetchDataFromMemory()
+//                viewModel.fetchProductsFromMemory()
                 Logger.log(kind: .error, message: error)
             }
         }
@@ -75,7 +78,7 @@ private extension RootView {
     var AllTabBarViews: some View {
         switch nav.activeTab {
         case .house:
-            MainView(viewModel: MainView.ViewModel(rootViewModel: viewModel), size: size)
+            MainView(viewModel: .init(), size: size)
         case .shop:
             CategoriesView(viewModel: .mockData)
         case .bag:
@@ -86,7 +89,7 @@ private extension RootView {
         case .profile:
             ProfileScreen(
                 viewModel: .init(
-                    user: viewModel.currentUser.mapper(products: viewModel.currentUserProducts)
+                    user: viewModel.currentUser.mapper.mapper(products: viewModel.productData.currentUserProducts.mapperToProductModel)
                 )
             )
         }
@@ -98,5 +101,7 @@ private extension RootView {
 #Preview {
     RootView()
         .environmentObject(Navigation())
-        .modelContainer(Preview(SDUserModel.self).container)
+        .environmentObject(RootViewModel.mockData)
+        .modelContainer(Preview(SDUserModel.self,
+                                SDProductModel.self).container)
 }

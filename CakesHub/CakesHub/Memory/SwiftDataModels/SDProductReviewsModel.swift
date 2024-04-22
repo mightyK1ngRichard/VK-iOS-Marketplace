@@ -3,6 +3,7 @@
 //  CakesHub
 //
 //  Created by Dmitriy Permyakov on 14.04.2024.
+//  Copyright 2024 © VK Team CakesHub. All rights reserved.
 //
 
 import Foundation
@@ -10,60 +11,64 @@ import SwiftData
 
 @Model
 final class SDProductReviewsModel {
-    var countFiveStars  : Int
-    var countFourStars  : Int
-    var countThreeStars : Int
-    var countTwoStars   : Int
-    var countOneStars   : Int
-    var countOfComments : Int
-    var comments        : [CommentInfo]
+    var _countFiveStars  : Int
+    var _countFourStars  : Int
+    var _countThreeStars : Int
+    var _countTwoStars   : Int
+    var _countOneStars   : Int
+    var _countOfComments : Int
+    var _comments        : [SDCommentInfoModel]
 
     init(
-        countFiveStars: Int,
-        countFourStars: Int,
-        countThreeStars: Int,
-        countTwoStars: Int,
-        countOneStars: Int,
-        countOfComments: Int,
-        comments: [CommentInfo]
+        countFiveStars  : Int,
+        countFourStars  : Int,
+        countThreeStars : Int,
+        countTwoStars   : Int,
+        countOneStars   : Int,
+        countOfComments : Int,
+        comments        : [SDCommentInfoModel]
     ) {
-        self.countFiveStars = countFiveStars
-        self.countFourStars = countFourStars
-        self.countThreeStars = countThreeStars
-        self.countTwoStars = countTwoStars
-        self.countOneStars = countOneStars
-        self.countOfComments = countOfComments
-        self.comments = comments
+        self._countFiveStars = countFiveStars
+        self._countFourStars = countFourStars
+        self._countThreeStars = countThreeStars
+        self._countTwoStars = countTwoStars
+        self._countOneStars = countOneStars
+        self._countOfComments = countOfComments
+        self._comments = comments
     }
 }
 
-// MARK: - CommentInfo
+// MARK: - Init
+
+extension SDProductReviewsModel: SDModelable {
+    typealias FBModelType = FBProductModel.FBProductReviewsModel
+
+    convenience init(fbModel: FBModelType) {
+        self.init(
+            countFiveStars: fbModel.countFiveStars,
+            countFourStars: fbModel.countFourStars,
+            countThreeStars: fbModel.countThreeStars,
+            countTwoStars: fbModel.countTwoStars,
+            countOneStars: fbModel.countOneStars,
+            countOfComments: fbModel.countOfComments,
+            comments: fbModel.comments.map { .init(fbModel: $0) }
+        )
+    }
+}
+
+// MARK: - Mapper
 
 extension SDProductReviewsModel {
 
-    @Model
-    final class CommentInfo {
-        let id                 : String
-        var userName           : String
-        var date               : String
-        var descriptionComment : String
-        var countFillStars     : Int
-        var feedbackCount      : Int
-
-        init(
-            id: String,
-            userName: String,
-            date: String,
-            description: String,
-            countFillStars: Int,
-            feedbackCount: Int
-        ) {
-            self.id = id
-            self.userName = userName
-            self.date = date
-            self.descriptionComment = description
-            self.countFillStars = countFillStars
-            self.feedbackCount = feedbackCount
-        }
+    var mapperInFBProductReviews: FBProductModel.FBProductReviewsModel {
+        .init(
+            countFiveStars: _countFiveStars,
+            countFourStars: _countFourStars,
+            countThreeStars: _countThreeStars,
+            countTwoStars: _countTwoStars,
+            countOneStars: _countOneStars,
+            countOfComments: _countOfComments,
+            comments: _comments.map { $0.mapperInFBCommentInfo }
+        )
     }
 }

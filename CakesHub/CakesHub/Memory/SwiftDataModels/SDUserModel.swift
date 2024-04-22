@@ -9,42 +9,59 @@ import SwiftData
 
 @Model
 class SDUserModel {
-    var uid: String
-    var nickName: String
-    var email: String
-    var userImageURL: String?
-    var userHeaderImageURL: String?
-    var products: [SDProductModel]
+    var _uid                : String
+    var _nickName           : String
+    var _email              : String
+    var _userImageURL       : String?
+    var _userHeaderImageURL : String?
+    var _phone              : String?
 
     init(
-        uid: String,
-        nickName: String,
-        email: String,
-        userImageURL: String? = nil,
-        userHeaderImageURL: String? = nil,
-        products: [SDProductModel] = []
+        uid                : String,
+        nickName           : String,
+        email              : String,
+        userImageURL       : String? = nil,
+        userHeaderImageURL : String? = nil,
+        phone              : String? = nil
     ) {
-        self.uid = uid
-        self.nickName = nickName
-        self.email = email
-        self.userImageURL = userImageURL
-        self.userHeaderImageURL = userHeaderImageURL
-        self.products = products
+        self._uid = uid
+        self._nickName = nickName
+        self._email = email
+        self._userImageURL = userImageURL
+        self._userHeaderImageURL = userHeaderImageURL
+        self._phone = phone
     }
 }
 
-// MARK: - Mock Data
+// MARK: - Init
 
-#if DEBUG
-extension SDUserModel? {
+extension SDUserModel: SDModelable {
+    typealias FBModelType = FBUserModel
 
-    static let king = ProductModel.SellerInfo(
-        id: "D4zfn3CLZjb0d2PWVPIFmGhptHr2",
-        name: "mightyK1ngRichard",
-        surname: "Permyakov",
-        mail: "dimapermyakov55@gmail.com",
-        userImage: .url(.mockKingImage),
-        userHeaderImage: .url(.mockKingHeaderImage)
-    )
+    convenience init(fbModel: FBUserModel) {
+        self.init(
+            uid: fbModel.uid,
+            nickName: fbModel.nickname,
+            email: fbModel.email,
+            userImageURL: fbModel.avatarImage,
+            userHeaderImageURL: fbModel.headerImage,
+            phone: fbModel.phone
+        )
+    }
 }
-#endif
+
+// MARK: - Mapper
+
+extension SDUserModel {
+
+    var mapperInFBUserModel: FBUserModel {
+        FBUserModel(
+            uid: _uid,
+            nickname: _nickName,
+            email: _email,
+            avatarImage: _userImageURL,
+            headerImage: _userHeaderImageURL,
+            phone: _phone
+        )
+    }
+}
