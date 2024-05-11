@@ -10,13 +10,16 @@ import Foundation
 
 protocol WebSockerManagerProtocol: AnyObject {
     func connection(completion: @escaping CHMGenericBlock<Error?>)
-    func send(message: Message, completion: @escaping CHMVoidBlock)
-    func receive(completion: @escaping CHMGenericBlock<Message>)
+    func send<T: Codable>(message: T, completion: @escaping CHMVoidBlock)
+    func receive(completion: @escaping CHMGenericBlock<Data>)
     func close()
 }
 
+// MARK: - WebSockerManager
+
 final class WebSockerManager {
-    private let urlMessage: String = "ws://localhost:8080/socket"
+//    private let urlMessage: String = "ws://localhost:8080/socket"
+    private let urlMessage: String = "ws://192.168.1.33:8080/socket"
     static let shared: WebSockerManagerProtocol = WebSockerManager()
     private var webSocketTask: URLSessionWebSocketTask?
     private init() {}
@@ -38,7 +41,7 @@ extension WebSockerManager: WebSockerManagerProtocol {
         webSocketTask = nil
     }
 
-    func send(message: Message, completion: @escaping CHMVoidBlock) {
+    func send<T: Encodable>(message: T, completion: @escaping CHMVoidBlock) {
         do {
             let jsonData = try JSONEncoder().encode(message)
             guard let jsonString = String(data: jsonData, encoding: .utf8) else { return }
@@ -48,14 +51,16 @@ extension WebSockerManager: WebSockerManagerProtocol {
                     Logger.log(kind: .error, message: error)
                     return
                 }
-                completion()
+                DispatchQueue.main.async {
+                    completion()
+                }
             }
         } catch {
             Logger.log(kind: .error, message: error.localizedDescription)
         }
     }
 
-    func receive(completion: @escaping CHMGenericBlock<Message>) {
+    func receive(completion: @escaping CHMGenericBlock<Data>) {
         webSocketTask?.receive { [weak self] result in
             guard let self, webSocketTask != nil else { return }
             switch result {
@@ -67,16 +72,9 @@ extension WebSockerManager: WebSockerManagerProtocol {
                 case let .string(stringMessage):
                     Logger.log(message: "Получено сообщение: [ " + stringMessage + " ]")
                     guard let data = stringMessage.data(using: .utf8) else { return }
-                    do {
-                        let message = try JSONDecoder().decode(Message.self, from: data)
-                        completion(message)
-                    } catch {
-                        Logger.log(
-                            kind: .error,
-                            message: "Не получилось распарсить сообщение: [ \(stringMessage) ] к типу Message.self.\n [ \(error.localizedDescription) ]"
-                        )
-                    }
-                @unknown default: break
+                    completion(data)
+                @unknown default:
+                    break
                 }
 
             case let .failure(error):

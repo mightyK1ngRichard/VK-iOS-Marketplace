@@ -14,16 +14,19 @@ protocol RootViewModelProtocol: AnyObject {
     func fetchData() async throws
     func saveNewProduct(product: FBProductModel, completion: @escaping (Error?) -> Void)
     // MARK: Memory
-    func fetchProductsFromMemory() -> [FBProductModel]
+    func fetchDataWithoutNetwork()
+    func fetchProductsFromMemory() -> [SDProductModel]
     func fetchProductByID(id: String) -> SDProductModel?
-    func isExist(by product: FBProductModel) -> Bool
     func saveProductsInMemory(products: [FBProductModel])
     func addProductInMemory(product: FBProductModel)
     // MARK: Reducers
     func setCurrentUser(for user: FBUserModel)
     func addNewProduct(product: FBProductModel)
     func setContext(context: ModelContext)
+    func updateExistedProduct(product: FBProductModel)
 }
+
+// MARK: - RootViewModel
 
 final class RootViewModel: ObservableObject {
     @Published private(set) var productData: ProductsData
@@ -59,27 +62,40 @@ extension RootViewModel: RootViewModelProtocol {
 
         // Достаём закэшированные данные
         let sdProducts = fetchProductsFromMemory()
-        groupDataBySection(data: sdProducts) { [weak self] sections in
+        let fbProducts = sdProducts.map { $0.mapper }
+        productData.products = fbProducts
+        filterCurrentUserProducts()
+        groupDataBySection(data: fbProducts) { [weak self] sections in
+            guard let self else { return }
+            productData.sections = sections
+            isShimmering = sections.isEmpty
+        }
+
+        // Достаём данные из сети
+        let newFBProducts = try await services.cakeService.getCakesList()
+        productData.products = newFBProducts
+        filterCurrentUserProducts()
+
+        // Кэшируем данные
+        saveProductsInMemory(products: newFBProducts)
+
+        // Группируем данные по секциям
+        groupDataBySection(data: newFBProducts) { [weak self] sections in
             guard let self else { return }
             productData.sections = sections
             isShimmering = false
         }
-//        return
-        // Достаём данные из сети
-        let fbProucts = try await services.cakeService.getCakesList()
+    }
 
-        // Кэшируем данные
-        saveProductsInMemory(products: fbProucts)
-
-//        let uniqueProducts = fbProucts.filter { fbProduct in
-//            !sdProducts.contains(where: { $0.documentID == fbProduct.documentID })
-//        }
-
-        // Группируем данные по секциям
-        groupDataBySection(data: fbProucts) { [weak self] sections in
+    func fetchDataWithoutNetwork() {
+        let sdProducts = fetchProductsFromMemory()
+        let fbProducts = sdProducts.map { $0.mapper }
+        productData.products = fbProducts
+        filterCurrentUserProducts()
+        groupDataBySection(data: fbProducts) { [weak self] sections in
             guard let self else { return }
             productData.sections = sections
-            isShimmering = false
+            isShimmering = sections.isEmpty
         }
     }
 
@@ -93,41 +109,46 @@ extension RootViewModel: RootViewModelProtocol {
 extension RootViewModel {
     
     /// Достаём данные товаров из памяти устройства
-    func fetchProductsFromMemory() -> [FBProductModel] {
-        let sdProduct: [SDProductModel] = services.swiftDataService?.fetchData() ?? []
-        return sdProduct.map { $0.mapperInFBProductModel }
+    func fetchProductsFromMemory() -> [SDProductModel] {
+        let fetchDescriptor = FetchDescriptor<SDProductModel>()
+        return (try? context?.fetch(fetchDescriptor)) ?? []
     }
 
     /// Достаём продукт по `id` из памяти
     func fetchProductByID(id: String) -> SDProductModel? {
         let predicate = #Predicate<SDProductModel> { $0._id == id }
-        let product = services.swiftDataService?.fetchObject(predicate: predicate)
+        var fetchDescriptor = FetchDescriptor(predicate: predicate)
+        fetchDescriptor.fetchLimit = 1
+        let product = try? context?.fetch(fetchDescriptor).first
         return product
-    }
-
-    /// Проверка на наличие в памяти продукта по `id`
-    func isExist(by product: FBProductModel) -> Bool {
-        guard let oldProductFromBD = fetchProductByID(id: product.documentID) else {
-            return false
-        }
-
-        // Если свойства модели изменились, продукт будет перезаписан в памяти
-        let oldProduct = oldProductFromBD.mapperInFBProductModel
-        return product == oldProduct
     }
 
     /// Сохраняем торары в память устройства
     func saveProductsInMemory(products: [FBProductModel]) {
-        services.swiftDataService?.writeObjects(objects: products, sdType: SDProductModel.self)
+        guard let context else {
+            Logger.log(kind: .error, message: "context is nil")
+            return
+        }
+
+        for product in products {
+            let sdProduct = SDProductModel(fbModel: product)
+            context.insert(sdProduct)
+            let seller = SDUserModel(fbModel: product.seller)
+            sdProduct._seller = seller
+        }
+
+        do { try context.save() }
+        catch { Logger.log(kind: .error, message: "context.save() выдал ошибку: \(error.localizedDescription)") }
     }
     
     /// Добавляем продукт в память устройства
     func addProductInMemory(product: FBProductModel) {
-        DispatchQueue.global(qos: .utility).async {
-            let sdProduct = SDProductModel(fbModel: product)
-            self.context?.insert(sdProduct)
-            try? self.context?.save()
-        }
+        let sdProduct = SDProductModel(fbModel: product)
+        self.context?.insert(sdProduct)
+        let seller: SDUserModel = SDUserModel(fbModel: product.seller)
+        sdProduct._seller = seller
+        do { try self.context?.save() }
+        catch { Logger.log(kind: .error, message: "context.save() выдал ошибку: \(error.localizedDescription)") }
     }
 }
 
@@ -176,10 +197,46 @@ extension RootViewModel {
         addProductInMemory(product: product)
     }
 
+    /// Обновляем данные существующего товара, если таковой имеется
+    func updateExistedProduct(product: FBProductModel) {
+        guard
+            let index = productData.products.firstIndex(where: { $0.documentID == product.documentID })
+        else {
+            Logger.log(kind: .error, message: "Не получилось обновить данные товара. Он не найден")
+            return
+        }
+        productData.products[index] = product
+
+        // Обновляем торт в определённой секции
+        switch determineSection(for: product) {
+        case .news:
+            let sectionIndex = 1
+            let section = productData.sections[sectionIndex]
+            let oldProducts: [ProductModel] = section.products.map {
+                $0.id == product.documentID ? product.mapperToProductModel : $0
+            }
+            productData.sections[sectionIndex] = .news(oldProducts)
+        case .sales:
+            let sectionIndex = 0
+            let section = productData.sections[sectionIndex]
+            let oldProducts: [ProductModel] = section.products.map {
+                $0.id == product.documentID ? product.mapperToProductModel : $0
+            }
+            productData.sections[sectionIndex] = .sales(oldProducts)
+        case .all:
+            let sectionIndex = 2
+            let section = productData.sections[sectionIndex]
+            let oldProducts: [ProductModel] = section.products.map {
+                $0.id == product.documentID ? product.mapperToProductModel : $0
+            }
+            productData.sections[sectionIndex] = .all(oldProducts)
+        }
+
+    }
+
     func setContext(context: ModelContext) {
         guard self.context.isNil else { return }
         self.context = context
-        services.swiftDataService = SwiftDataService(context: context)
     }
 }
 
@@ -235,5 +292,11 @@ private extension RootViewModel {
             return .news([])
         }
         return .all([])
+    }
+
+    /// Фильтруем товары текущего пользователя
+    func filterCurrentUserProducts() {
+        let userProducts = productData.products.filter { $0.seller.uid == currentUser.uid }
+        productData.currentUserProducts = userProducts
     }
 }

@@ -12,7 +12,7 @@ struct MessageAbstract: Codable {
 }
 
 struct Message: Codable, Identifiable {
-    var id: UUID
+    var id: String
     let kind: MessageKind
     let userName: String
     let userID: String
@@ -32,6 +32,7 @@ enum MessageKind: String, Codable {
     case connection
     case message
     case close
+    case notification
 }
 
 // MARK: - Encode
