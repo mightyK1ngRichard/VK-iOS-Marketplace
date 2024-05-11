@@ -10,7 +10,7 @@ import UIKit
 
 protocol FileManagerImageHashProtocol {
     func getImage(key: String) -> UIImage?
-    func saveImage(uiImage: UIImage, for key: String)
+    func saveImage(uiImage: UIImage, for key: String, completion: CHMGenericBlock<APIError?>?)
     func deleteImage(by key: String)
 }
 
@@ -21,6 +21,8 @@ final class FileManagerImageHash {
     static let shared = FileManagerImageHash()
     private let fileManager = FileManager.default
     private let saveQueue = DispatchQueue(label: "com.vk.FileManagerImageHash.saveImages", qos: .utility, attributes: [.concurrent])
+
+    private init() {}
 }
 
 // MARK: - FileManagerImageHashProtocol
@@ -45,7 +47,7 @@ extension FileManagerImageHash: FileManagerImageHashProtocol {
         return UIImage(data: data)
     }
 
-    func saveImage(uiImage: UIImage, for key: String) {
+    func saveImage(uiImage: UIImage, for key: String, completion: CHMGenericBlock<APIError?>? = nil) {
         guard let url = path else {
             Logger.log(kind: .error, message: "file manager url is nil")
             return
@@ -56,8 +58,10 @@ extension FileManagerImageHash: FileManagerImageHashProtocol {
             do {
                 try data?.write(to: imageURL, options: [.atomic])
                 Logger.log(message: "image by key: [\(key)] successfully saved!")
+                completion?(nil)
             } catch {
                 Logger.log(kind: .error, message: error)
+                completion?(.error(error))
             }
         }
     }

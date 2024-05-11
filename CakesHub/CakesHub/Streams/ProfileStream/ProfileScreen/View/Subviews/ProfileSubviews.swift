@@ -3,6 +3,7 @@
 //  CakesHub
 //
 //  Created by Milana Shakhbieva on 03.04.2024.
+//  Copyright 2024 © VK Team CakesHub. All rights reserved.
 //
 
 import SwiftUI
@@ -125,7 +126,7 @@ extension ProfileScreen {
                         ),
                         starsViewConfiguration: .basic(
                             kind: .init(rawValue: product.starsCount) ?? .zero,
-                            feedbackCount: product.reviewInfo.feedbackCounter
+                            feedbackCount: product.reviewInfo.feedbackCount
                         )
                     )
                 ) { isSelected in

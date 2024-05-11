@@ -80,7 +80,7 @@ extension CreateProductViewModel: CreateProductViewModelProtocol {
             guard let uiImage = UIImage(data: data) else { return nil }
             images.insert(uiImage)
             let imagePathName: String = "created-image-\(index)"
-            self.services.fileManager.saveImage(uiImage: uiImage, for: imagePathName)
+            self.services.fileManager.saveImage(uiImage: uiImage, for: imagePathName, completion: nil)
             return imagePathName
         }
         self.inputProductData.productImages = images
@@ -119,15 +119,23 @@ private extension CreateProductViewModel {
         FBProductModel(
             documentID: UUID().uuidString,
             images: .images(inputProductData.productImages.map { $0 }),
-            pickers: [], // TODO: iOS-18: Добавить экран с выбором пикеров
+            categories: [], // TODO: iOS-23: Добавить выборку пикеров
             productName: inputProductData.productName,
             price: inputProductData.productPrice,
-            discountedPrice: inputProductData.productDiscountedPrice,
+            discountedPrice: {
+                guard 
+                    let price = inputProductData.productDiscountedPrice,
+                    !price.isEmpty
+                else {
+                    return nil
+                }
+                return price
+            }(),
             weight: nil,
             seller: rootViewModel.currentUser,
             description: inputProductData.productDescription,
             similarProducts: [],
-            establishmentDate: Date.now.formattedString(format: "yyyy-MM-dd HH:mm:ss"),
+            establishmentDate: Date().description,
             reviewInfo: .clear
         )
     }
