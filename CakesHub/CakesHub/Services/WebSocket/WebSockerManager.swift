@@ -18,8 +18,8 @@ protocol WebSockerManagerProtocol: AnyObject {
 // MARK: - WebSockerManager
 
 final class WebSockerManager {
-//    private let urlMessage: String = "ws://localhost:8080/socket"
-    private let urlMessage: String = "ws://192.168.1.33:8080/socket"
+//    private let urlMessage: String = "ws://localhost:2727/socket"
+    private let urlMessage: String = "ws://172.20.10.14:2727/socket"
     static let shared: WebSockerManagerProtocol = WebSockerManager()
     private var webSocketTask: URLSessionWebSocketTask?
     private init() {}

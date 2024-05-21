@@ -15,6 +15,7 @@ protocol NewDetailScreenViewModelProtocol {
     // MARK: Actions
     func didTapLikeButton(isSelected: Bool, completion: CHMVoidBlock?)
     func didTapBuyButton(completion: @escaping CHMVoidBlock)
+    func didTapDeleteButton(completion: @escaping CHMVoidBlock)
     // MARK: Reducers
     func setCurrentUser(user: FBUserModel)
 }
@@ -33,6 +34,7 @@ final class ProductDetailViewModel: ViewModelProtocol, NewDetailScreenViewModelP
 }
 
 // MARK: - Network
+
 extension ProductDetailViewModel {
 
     /// Отправляем уведомление в firebase
@@ -111,6 +113,19 @@ extension ProductDetailViewModel {
             }
         }
     }
+
+    func didTapDeleteButton(completion: @escaping CHMVoidBlock) {
+        Task {
+            do {
+                try await services.cakeService.deleteProduct(by: currentProduct.id)
+                await MainActor.run {
+                    completion()
+                }
+            } catch {
+                Logger.log(kind: .error, message: error.localizedDescription)
+            }
+        }
+    }
 }
 
 // MARK: - Reducers
@@ -160,7 +175,7 @@ private extension ProductDetailViewModel {
             kind: .notification,
             title: "Вы заказали торт: \"\(productName)\"",
             date: date,
-            message: "Вы заказали торт: \"\(productName)\" по цене $\(productPrice) у продавца: \(sellerName)",
+            message: "Вы заказали торт: \"\(productName)\" по цене \(productPrice) у продавца: \(sellerName)",
             productID: productID,
             userID: sellerID,
             receiverID: customerID

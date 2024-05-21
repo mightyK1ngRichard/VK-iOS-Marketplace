@@ -18,17 +18,27 @@ struct AuthView: View, ViewModelable {
     @Environment(\.modelContext) var context
     @State var viewModel = ViewModel()
 
-    @State private var showingAlert = false
-    @State private var alertMessage: String?
-
     var body: some View {
-        MainView
-            .onAppear(perform: onAppear)
-            .alert("Ошибка", isPresented: $showingAlert) {
-                Button("OK") {}
-            } message: {
-                Text(alertMessage ?? .clear)
-            }
+        ZStack {
+            MainView
+                .clipShape(
+                    .rect(
+                        cornerRadius: showRoundedRectangle ? 26 : 0
+                    )
+                )
+        }
+        .background(CHMColor<BackgroundPalette>.bgMainColor.color.gradient)
+        .ignoresSafeArea()
+        .onAppear(perform: onAppear)
+        .alert(String(localized: "Error"), isPresented: $viewModel.uiProperies.showingAlert) {
+            Button("OK") {}
+        } message: {
+            Text(viewModel.uiProperies.alertMessage ?? .clear)
+        }
+    }
+
+    private var showRoundedRectangle: Bool {
+        UIScreen.current?.displayCornerRadius ?? 0 > 26
     }
 }
 
@@ -46,41 +56,33 @@ private extension AuthView {
 // MARK: - Actions
 
 extension AuthView {
-    
-    /// Нажатие кнопки `регистрация`
-    func didTapRegisterButton() {
-        Task {
-            do {
-                try await viewModel.didTapRegisterButton()
-            } catch {
-                generateErrorMessage(error: error)
-            }
+
+    /// Нажатие кнопки `дальше`
+    func didTapNextButton() {
+        if viewModel.uiProperies.isRegister {
+            Logger.log(message: "Нажали кнопку регистрация")
+            viewModel.didTapRegisterButton()
+        } else {
+            Logger.log(message: "Нажали кнопку войти")
+            viewModel.didTapSignInButton()
         }
     }
 
-    /// Нажатие кнопки `Войти`
-    func didTapSignInButton() {
-        Task {
-            do {
-                try await viewModel.didTapSignInButton()
-            } catch {
-                generateErrorMessage(error: error)
-            }
+    /// Нажатие кнопки `нет аккаунта`
+    func didTapNoAccount() {
+        withAnimation(.bouncy(duration: 2)) {
+            viewModel.uiProperies.isRegister.toggle()
         }
-    }
-
-    private func generateErrorMessage(error: any Error) {
-        showingAlert = true
-        alertMessage = error.localizedDescription
-        Logger.log(kind: .error, message: error)
     }
 }
 
 // MARK: - Preview
 
 #Preview {
-    AuthView(viewModel: .mockData)
-        .environmentObject(Navigation())
-        .environmentObject(RootViewModel.mockData)
-        .modelContainer(Preview(SDUserModel.self).container)
+    NavigationStack {
+        AuthView(viewModel: .mockData)
+    }
+    .environmentObject(Navigation())
+    .environmentObject(RootViewModel.mockData)
+    .modelContainer(Preview(SDUserModel.self).container)
 }

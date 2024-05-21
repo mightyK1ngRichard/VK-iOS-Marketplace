@@ -39,6 +39,9 @@ extension ProductDetailScreen {
             if userIsNotSeller {
                 BuyButton
                     .padding(.bottom, UIDevice.isSe ? 16 : .zero)
+            } else {
+                DeleteButton
+                    .padding(.bottom, UIDevice.isSe ? 16 : .zero)
             }
         }
         .overlay(alignment: .topLeading) {
@@ -82,12 +85,13 @@ extension ProductDetailScreen {
             pickers: viewModel.currentProduct.categories.map { .init(title: $0) },
             lastSelected: $selectedPicker
         )
-        .overlay(alignment: .trailing) {
-            LikeIcon(isSelected: $isPressedLike) {
-                didTapFavoriteIcon()
-            }
-            .padding(.trailing)
-        }
+        // TODO: Вернуть кнопку лайка
+//        .overlay(alignment: .trailing) {
+//            LikeIcon(isSelected: $isPressedLike) {
+//                didTapFavoriteIcon()
+//            }
+//            .padding(.trailing)
+//        }
     }
 
     var DetailBlock: some View {
@@ -121,7 +125,7 @@ extension ProductDetailScreen {
         VStack {
             Divider()
             Button(action: openRatingReviews, label: {
-                MoreInfoCell(text: ProductDetailCells.ratingReviews.rawValue)
+                MoreInfoCell(text: String(localized: ProductDetailCells.ratingReviews.title))
                     .padding(.horizontal)
             })
 
@@ -129,7 +133,7 @@ extension ProductDetailScreen {
 
             if userIsNotSeller {
                 Button(action: openSellerInfo, label: {
-                    MoreInfoCell(text: ProductDetailCells.sellerInfo.rawValue)
+                    MoreInfoCell(text: String(localized: ProductDetailCells.sellerInfo.title))
                         .padding(.horizontal)
                 })
                 Divider()
@@ -203,7 +207,22 @@ extension ProductDetailScreen {
         Button {
             didTapBuyButton()
         } label: {
-            Text(Constants.buyButtonTitle)
+            Text(Constants.buyButtonTitle.uppercased())
+                .font(.system(size: 14, weight: .medium))
+                .frame(maxWidth: .infinity)
+        }
+        .padding(.vertical, 14)
+        .background(CHMColor<BackgroundPalette>.bgRed.color)
+        .clipShape(.rect(cornerRadius: 25))
+        .padding(.horizontal)
+        .tint(Color.white)
+    }
+
+    var DeleteButton: some View {
+        Button {
+            didTapDeleteButton()
+        } label: {
+            Text(Constants.deleteButtonTitle.uppercased())
                 .font(.system(size: 14, weight: .medium))
                 .frame(maxWidth: .infinity)
         }
@@ -296,8 +315,9 @@ private extension View {
 private extension ProductDetailScreen {
 
     enum Constants {
-        static let similarBlockHeaderTitle = "You can also like this"
-        static let buyButtonTitle = "MAKE AN ORDER"
+        static let similarBlockHeaderTitle = String(localized: "You can also like this")
+        static let buyButtonTitle = String(localized: "Make an order")
+        static let deleteButtonTitle = String(localized: "Delete product")
     }
 }
 

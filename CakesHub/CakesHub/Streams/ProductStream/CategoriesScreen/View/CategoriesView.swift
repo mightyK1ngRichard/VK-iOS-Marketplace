@@ -26,7 +26,9 @@ struct CategoriesView: View {
             .navigationDestination(for: ViewModel.Screens.self) { screen in
                 switch screen {
                 case let .sectionCakes(products):
-                    let productModels: [ProductModel] = products.mapperToProductModel
+                    let productModels: [ProductModel] = products.map { product in
+                        RootViewModel.getProductSimilarProducts(for: product, data: products)
+                    }
                     let vm = AllProductsCategoryViewModel(products: productModels)
                     AllProductsCategoryView(viewModel: vm)
                 }
@@ -63,6 +65,6 @@ extension CategoriesView {
         .environmentObject(Navigation())
         .environmentObject(RootViewModel.mockData)
         .modelContainer(
-            Preview(SDCateoryModel.self).container
+            Preview(SDCategoryModel.self).container
         )
 }

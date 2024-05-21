@@ -13,8 +13,12 @@ struct SettingsView: View {
     var body: some View {
         List {
             Section(header: Text("Персональные данные")) {
+                NavigationLink(destination: EditProfileView()) {
+                    Label("Редактировать профиль", systemImage: "person")
+                        .foregroundColor(Constants.textColor)
+                }
                 NavigationLink(destination: Text("Введите новый пароль")) {
-                    Label("Пароль", systemImage: "lock")
+                    Label("Редактировать пароль", systemImage: "lock")
                         .foregroundColor(Constants.textColor)
                 }
                 NavigationLink(destination: Text("Введите новую почту")) {
@@ -27,7 +31,7 @@ struct SettingsView: View {
                 }
             }
 
-            Section(header: Text("Уведомления")) {
+            Section(header: Text("Уведомлений")) {
                 NavigationLink(destination: NotificationsView()) {
                     Label("Уведомления", systemImage: "bell")
                         .foregroundColor(Constants.textColor)
