@@ -16,6 +16,8 @@ import SwiftUI
 protocol CakeServiceProtocol {
     func getCakesList() async throws -> [FBProductModel]
     func createCake(cake: FBProductModel, completion: @escaping (Error?) -> Void)
+    func deleteUserProducts(sellerID: String) async throws
+    func deleteProduct(by id: String) async throws
     func sendFeedback(productID: String, text feedbackText: String, count countFilledStar: Int, username: String) async throws -> FBProductModel
 }
 
@@ -101,6 +103,11 @@ extension CakeService: CakeServiceProtocol {
         }
     }
 
+    /// Delete product by id
+    func deleteProduct(by id: String) async throws {
+        try await firestore.collection(collection).document(id).delete()
+    }
+
     func sendFeedback(
         productID: String,
         text feedbackText: String,
@@ -126,9 +133,9 @@ extension CakeService: CakeServiceProtocol {
                 countFillStars: countFilledStar
             )
             fbProduct.reviewInfo.comments.append(newComment)
-            fbProduct.reviewInfo.feedbackCount += 1
             fbProduct.reviewInfo.countOfComments += 1
         }
+        fbProduct.reviewInfo.feedbackCount += 1
 
         // Обновляем рейтинг
         switch countFilledStar {
@@ -156,6 +163,19 @@ extension CakeService: CakeServiceProtocol {
         ])
         
         return fbProduct
+    }
+    
+    /// Delete all user products
+    func deleteUserProducts(sellerID: String) async throws {
+        let query = firestore.collection(collection).whereField("sellerID", isEqualTo: sellerID)
+        let snapshot = try await query.getDocuments()
+        let batch = firestore.batch()
+
+        for document in snapshot.documents {
+            batch.deleteDocument(document.reference)
+        }
+
+        try await batch.commit()
     }
 }
 

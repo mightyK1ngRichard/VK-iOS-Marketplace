@@ -21,9 +21,11 @@ protocol RootViewModelProtocol: AnyObject {
     func addProductInMemory(product: FBProductModel)
     // MARK: Reducers
     func setCurrentUser(for user: FBUserModel)
+    func resetUser()
     func addNewProduct(product: FBProductModel)
     func setContext(context: ModelContext)
     func updateExistedProduct(product: FBProductModel)
+    func updateUserName(newNickname: String)
 }
 
 // MARK: - RootViewModel
@@ -71,6 +73,32 @@ extension RootViewModel: RootViewModelProtocol {
             isShimmering = sections.isEmpty
         }
 
+        // Достаём данные из сети
+        let newFBProducts = try await services.cakeService.getCakesList()
+        productData.products = newFBProducts
+        filterCurrentUserProducts()
+
+        // Кэшируем данные
+        saveProductsInMemory(products: newFBProducts)
+
+        // Группируем данные по секциям
+        groupDataBySection(data: newFBProducts) { [weak self] sections in
+            guard let self else { return }
+            productData.sections = sections
+            isShimmering = false
+        }
+
+        // Получаем данные пользователя
+        guard let userID = UserDefaults.standard.string(forKey: AuthViewModel.UserDefaultsKeys.currentUser) else {
+            return
+        }
+        let fbUser = try await services.userService.getUserInfo(uid: userID)
+        currentUser = fbUser
+        saveUserInMemory(user: fbUser)
+    }
+
+    @MainActor
+    func pullToRefresh() async throws {
         // Достаём данные из сети
         let newFBProducts = try await services.cakeService.getCakesList()
         productData.products = newFBProducts
@@ -150,18 +178,33 @@ extension RootViewModel {
         do { try self.context?.save() }
         catch { Logger.log(kind: .error, message: "context.save() выдал ошибку: \(error.localizedDescription)") }
     }
+
+    /// Кэшируем данные пользователя
+    func saveUserInMemory(user: FBUserModel) {
+        let sdUser = SDUserModel(fbModel: user)
+        context?.insert(sdUser)
+        try? context?.save()
+    }
 }
 
 // MARK: - Reducers
 
 extension RootViewModel {
 
+    @MainActor
     func setCurrentUser(for user: FBUserModel) {
         currentUser = user
         // Фильтруем данные только текущего пользователя
         productData.currentUserProducts = productData.products.filter { $0.seller.uid == currentUser.uid }
     }
 
+    @MainActor
+    func resetUser() {
+        currentUser = .clear
+        productData.currentUserProducts = []
+    }
+
+    @MainActor
     func addNewProduct(product: FBProductModel) {
         productData.products.append(product)
         productData.currentUserProducts.append(product)
@@ -198,6 +241,7 @@ extension RootViewModel {
     }
 
     /// Обновляем данные существующего товара, если таковой имеется
+    @MainActor
     func updateExistedProduct(product: FBProductModel) {
         guard
             let index = productData.products.firstIndex(where: { $0.documentID == product.documentID })
@@ -231,12 +275,61 @@ extension RootViewModel {
             }
             productData.sections[sectionIndex] = .all(oldProducts)
         }
-
     }
 
+    @MainActor
     func setContext(context: ModelContext) {
         guard self.context.isNil else { return }
         self.context = context
+    }
+
+    @MainActor
+    func updateUserImage(newAvatarString: String?) {
+        currentUser.avatarImage = newAvatarString
+    }
+
+    @MainActor
+    func updateUserHeaderImage(newHeaderString: String?) {
+        currentUser.headerImage = newHeaderString
+    }
+
+    @MainActor
+    func updateUserName(newNickname: String) {
+        currentUser.nickname = newNickname
+    }
+
+    @MainActor
+    func deleteProduct(by id: String) {
+        // Удаляем торт
+        productData.products = productData.products.filter { $0.documentID == id }
+
+        // Удаляём удалённый торт из секции
+        for index in 0..<productData.sections.count {
+            let currentSection = productData.sections[index]
+            if currentSection.products.contains(where: { $0.id == id }) {
+                switch currentSection {
+                case let .all(products):
+                    productData.sections[index] = .all(products.filter { $0.id != id })
+                case let .news(products):
+                    productData.sections[index] = .news(products.filter { $0.id != id })
+                case let .sales(products):
+                    productData.sections[index] = .sales(products.filter { $0.id != id })
+                }
+                break
+            }
+        }
+
+        // Удаляем торт из товаров пользователя
+        let userProducts = productData.currentUserProducts
+        productData.currentUserProducts = userProducts.filter({ $0.documentID != id })
+
+        // Удаляем торт из памяти устройства
+        do {
+            try context?.delete(model: SDProductModel.self, where: #Predicate { $0._id == id })
+            try context?.save()
+        } catch {
+            Logger.log(kind: .error, message: error.localizedDescription)
+        }
     }
 }
 
@@ -266,11 +359,14 @@ private extension RootViewModel {
             data.forEach { product in
                 switch self.determineSection(for: product) {
                 case .news:
-                    news.append(product.mapperToProductModel)
+                    let productModel = RootViewModel.getProductSimilarProducts(for: product, data: data)
+                    news.append(productModel)
                 case .sales:
-                    sales.append(product.mapperToProductModel)
+                    let productModel = RootViewModel.getProductSimilarProducts(for: product, data: data)
+                    sales.append(productModel)
                 case .all:
-                    all.append(product.mapperToProductModel)
+                    let productModel = RootViewModel.getProductSimilarProducts(for: product, data: data)
+                    all.append(productModel)
                 }
             }
 
@@ -298,5 +394,23 @@ private extension RootViewModel {
     func filterCurrentUserProducts() {
         let userProducts = productData.products.filter { $0.seller.uid == currentUser.uid }
         productData.currentUserProducts = userProducts
+    }
+}
+
+// MARK: - Public Functions
+
+extension RootViewModel {
+
+    static func getProductSimilarProducts(for product: FBProductModel, data: [FBProductModel]) -> ProductModel {
+        var productModel = product.mapperToProductModel
+        productModel.similarProducts = product.similarProducts.compactMap { similarProductID in
+            guard let similarProduct = data.first(where: {
+                $0.documentID == similarProductID
+            }) else {
+                return nil
+            }
+            return similarProduct.mapperToProductModel
+        }
+        return productModel
     }
 }
